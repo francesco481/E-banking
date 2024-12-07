@@ -5,7 +5,11 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.poo.checker.Checker;
 import org.poo.checker.CheckerConstants;
+import org.poo.command.*;
+import org.poo.fileio.CommandInput;
 import org.poo.fileio.ObjectInput;
+import org.poo.management.Database;
+import org.poo.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +43,7 @@ public final class Main {
         if (Files.exists(path)) {
             File resultFile = new File(String.valueOf(path));
             for (File file : Objects.requireNonNull(resultFile.listFiles())) {
-                file.delete();
+                boolean delete = file.delete();
             }
             resultFile.delete();
         }
@@ -73,25 +77,54 @@ public final class Main {
         ObjectInput inputData = objectMapper.readValue(file, ObjectInput.class);
 
         ArrayNode output = objectMapper.createArrayNode();
+        Database db = Database.getInstance();
 
-        /*
-         * TODO Implement your function here
-         *
-         * How to add output to the output array?
-         * There are multiple ways to do this, here is one example:
-         *
-         * ObjectMapper mapper = new ObjectMapper();
-         *
-         * ObjectNode objectNode = mapper.createObjectNode();
-         * objectNode.put("field_name", "field_value");
-         *
-         * ArrayNode arrayNode = mapper.createArrayNode();
-         * arrayNode.add(objectNode);
-         *
-         * output.add(arrayNode);
-         * output.add(objectNode);
-         *
-         */
+        db.addUsers(inputData.getUsers());
+        db.addExchanges(inputData.getExchangeRates());
+
+        for (CommandInput commands : inputData.getCommands())
+        {
+            String currCommand = commands.getCommand();
+            if (currCommand.equals("printUsers")) {
+                PrintUsers printUsers = new PrintUsers(db, objectMapper, output);
+                printUsers.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("printTransactions")) {
+                PrintTransactions printTransactions = new PrintTransactions();
+                printTransactions.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("addAccount")) {
+                AddAccount addAccount = new AddAccount(db, commands);
+                addAccount.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("createCard")) {
+                CreateCard createCard = new CreateCard(db, commands);
+                createCard.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("createOneTimeCard")) {
+                CreateCard createCard = new CreateCard(db, commands);
+                createCard.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("addFunds")) {
+                AddFunds addFunds = new AddFunds(db, commands);
+                addFunds.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("deleteAccount")) {
+                DeleteAccount deleteAccount = new DeleteAccount(db, commands, objectMapper, output);
+                deleteAccount.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("deleteCard")) {
+                DeleteCard deleteCard = new DeleteCard(db, commands, objectMapper, output);
+                deleteCard.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("payOnline")) {
+                PayOnline payOnline = new PayOnline(db, commands, objectMapper, output);
+                payOnline.execute(commands.getTimestamp());
+            }
+        }
+
+        db.clear();
+        Utils.resetRandom();
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);
