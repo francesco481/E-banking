@@ -17,6 +17,7 @@ public class Account {
     private double balance;
     private String currency;
     private String type;
+    private double minimum = 0;
     private ArrayList<CardType> cards = new ArrayList<>();
 
     public Account(CommandInput command) {

@@ -23,10 +23,13 @@ public class DeleteAccount implements Order {
     public void execute(int timestamp)
     {
         int ok = database.deleteAccount(command);
-        String successMessage = (ok == 1) ? "Account deleted" : "Failed to delete account";
+        String message = (ok == 1) ? "Account deleted" : "Account couldn't be deleted - see org.poo.transactions for details";
 
         ObjectNode outputNode = mapper.createObjectNode();
-        outputNode.put("success", successMessage);
+        if(ok == 1)
+            outputNode.put("success", message);
+        else
+            outputNode.put("error", message);
         outputNode.put("timestamp", timestamp);
 
         ObjectNode responseNode = mapper.createObjectNode();

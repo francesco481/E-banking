@@ -91,7 +91,7 @@ public final class Main {
                 printUsers.execute(commands.getTimestamp());
             }
             else if (currCommand.equals("printTransactions")) {
-                PrintTransactions printTransactions = new PrintTransactions();
+                PrintTransactions printTransactions = new PrintTransactions(db, objectMapper, output, commands);
                 printTransactions.execute(commands.getTimestamp());
             }
             else if (currCommand.equals("addAccount")) {
@@ -125,6 +125,14 @@ public final class Main {
             else if (currCommand.equals("sendMoney")) {
                 SendMoney sendMoney = new SendMoney(db, commands);
                 sendMoney.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("checkCardStatus")) {
+                CheckStatus checkStatus = new CheckStatus(db, commands, objectMapper, output);
+                checkStatus.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("setMinimumBalance")) {
+                SetMinimum setMinimum = new SetMinimum(db, commands);
+                setMinimum.execute(commands.getTimestamp());
             }
         }
 

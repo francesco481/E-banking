@@ -21,6 +21,7 @@ public class Database {
 
     private ArrayList<UserInput> Users = new ArrayList<>();
     private ArrayList<ArrayList<AccountType>> Accounts = new ArrayList<>();
+    private ArrayList<ArrayList<Alias>> Aliases= new ArrayList<>();
     @Getter
     private static ArrayList<ExchangeInput> Exchange = new ArrayList<>();
 
@@ -86,6 +87,9 @@ public class Database {
         String type = command.getAccountType();
         AccountType account = AccountFactory.getAccount(type, command);
         this.getAccounts().get(i).add(account);
+
+        UserInput user = this.getUsers().get(i);
+        user.addTransaction(new Transactions("New account created", command.getTimestamp()));
     }
 
     public void addCard(CommandInput command) {
@@ -100,10 +104,13 @@ public class Database {
             if(curr.getIBAN().equals(command.getAccount())) {
                 ((Account) account).addCard(command);
                 ok = 0;
+                UserInput user = this.getUsers().get(i);
+                user.addTransaction(new Transactions("New card created", command.getTimestamp(), ((Card) ((Account) account).getCards().getLast()).getCardNumber(), user.getEmail(), ((Account) account).getIBAN()));
+                return;
             }
         }
 
-        if(ok == 1){
+        if (ok == 1){
 
         }
     }
@@ -140,31 +147,38 @@ public class Database {
         Account curr = (Account) db.getAccounts().get(i).get(j);
         if (curr.getBalance() == 0){
             db.getAccounts().get(i).remove(j);
+            return 1;
         }
 
-        return 1;
+        return -1;
     }
 
     private int findCard(ArrayList<AccountType> accounts, String cardNumber) {
+        int st = 0;
         for (AccountType account : accounts) {
             Account curr = (Account)account;
             for(CardType card : curr.getCards()) {
                 if (((Card) card).getCardNumber().equals(cardNumber)) {
                     curr.getCards().remove(card);
-                    return 1;
+                    return st;
                 }
             }
+            st++;
         }
 
         return -1;
     }
 
     public int deleteCard(CommandInput command) {
+        int idx = 0;
         for (ArrayList<AccountType> accounts : this.getAccounts()) {
             int i = findCard(accounts, command.getCardNumber());
             if (i != -1) {
+                UserInput user = this.getUsers().get(idx);
+                user.addTransaction(new Transactions("The card has been destroyed", command.getTimestamp(), command.getCardNumber(), user.getEmail(), ((Account) accounts.get(i)).getIBAN()));
                 return 1;
             }
+            idx++;
         }
 
         return -1;

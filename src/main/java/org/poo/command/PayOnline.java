@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.poo.fileio.CommandInput;
+import org.poo.fileio.UserInput;
 import org.poo.management.Accounts.Account;
 import org.poo.management.Accounts.AccountType;
 import org.poo.management.Cards.Card;
 import org.poo.management.Cards.CardType;
 import org.poo.management.Database;
+import org.poo.management.Transactions;
 
 import java.util.ArrayList;
 
@@ -37,17 +39,29 @@ public class PayOnline implements Order {
         for (AccountType account : curr) {
             for (CardType card :  ((Account) account).getCards()) {
                 if (((Card) card).getCardNumber().equals(command.getCardNumber())) {
-
                     ok = 0;
+                    if (((Card) card).getStatus().equals("frozen"))
+                    {
+                        UserInput user = database.getUsers().get(i);
+                        user.addTransaction(new Transactions("The card is frozen", timestamp));
+                        return;
+                    }
                     double amount = command.getAmount() * Database.getRate(command.getCurrency(), ((Account) account).getCurrency());
-                   // System.out.println(command.getAmount() + " " + command.getCurrency() + " " + amount);
-                    if (account.getBalance() >= amount  &&
+                    if (account.getBalance() - ((Account) account).getMinimum() >= amount  &&
                         ((Card) card).getStatus().equals("active")) {
                         account.pay(amount);
                         card.pay();
+                        ok = 2;
+                        UserInput user = database.getUsers().get(i);
+                        user.addTransaction(new Transactions("Card payment", timestamp, command.getCommerciant(), amount));
                     }
                 }
             }
+        }
+
+        if (ok == 0) {
+            UserInput user = database.getUsers().get(i);
+            user.addTransaction(new Transactions("Insufficient funds", timestamp));
         }
 
         if (ok == 1)

@@ -14,4 +14,9 @@ public final class UserInput {
     private String email;
 
     private ArrayList<Transactions> transactions = new ArrayList<>();
+
+    public void addTransaction(Transactions transactions)
+    {
+        this.transactions.add(transactions);
+    }
 }

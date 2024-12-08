@@ -3,6 +3,7 @@ package org.poo.command;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.poo.fileio.CommandInput;
+import org.poo.fileio.UserInput;
 import org.poo.management.Database;
 
 import java.io.Serializable;
