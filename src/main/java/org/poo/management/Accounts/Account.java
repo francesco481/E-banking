@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.poo.fileio.CommandInput;
 import org.poo.management.Cards.Card;
 import org.poo.management.Cards.CardFactory;
+import org.poo.management.Cards.CardType;
 import org.poo.utils.Utils;
 
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ public class Account {
     private double balance;
     private String currency;
     private String type;
-    private ArrayList<Card> cards = new ArrayList<>();
+    private ArrayList<CardType> cards = new ArrayList<>();
 
     public Account(CommandInput command) {
         this.IBAN = Utils.generateIBAN();
@@ -31,7 +32,7 @@ public class Account {
         {
             type = 0;
         }
-        Card card = CardFactory.getCard(type);
+        CardType card = CardFactory.getCard(type);
         cards.add(card);
     }
 

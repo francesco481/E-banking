@@ -7,6 +7,7 @@ import org.poo.checker.Checker;
 import org.poo.checker.CheckerConstants;
 import org.poo.command.*;
 import org.poo.fileio.CommandInput;
+import org.poo.fileio.ExchangeInput;
 import org.poo.fileio.ObjectInput;
 import org.poo.management.Database;
 import org.poo.utils.Utils;
@@ -120,6 +121,10 @@ public final class Main {
             else if (currCommand.equals("payOnline")) {
                 PayOnline payOnline = new PayOnline(db, commands, objectMapper, output);
                 payOnline.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("sendMoney")) {
+                SendMoney sendMoney = new SendMoney(db, commands);
+                sendMoney.execute(commands.getTimestamp());
             }
         }
 

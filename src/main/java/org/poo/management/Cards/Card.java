@@ -9,6 +9,7 @@ import org.poo.utils.Utils;
 public class Card {
     private String cardNumber;
     private String status;
+
     public Card() {
         cardNumber = Utils.generateCardNumber();
         status = "active";

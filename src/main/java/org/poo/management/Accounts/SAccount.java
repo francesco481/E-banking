@@ -1,7 +1,12 @@
 package org.poo.management.Accounts;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.poo.fileio.CommandInput;
+import org.poo.management.Database;
 
+@Getter
+@Setter
 public class SAccount extends Account implements AccountType {
     double interestRate;
 
@@ -11,7 +16,7 @@ public class SAccount extends Account implements AccountType {
     }
 
     @Override
-    public void pay() {
-        System.out.println("Pay SAccount");
+    public void pay(double amount) {
+        this.setBalance(this.getBalance() - amount);
     }
 }

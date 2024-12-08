@@ -10,4 +10,14 @@ public final class ExchangeInput {
     private String to;
     private double rate;
     private int timestamp;
+
+    public ExchangeInput ExchangeInputRev(){
+        ExchangeInput rev = new ExchangeInput();
+        rev.from = to;
+        rev.to = from;
+        rev.rate = 1/rate;
+        rev.timestamp = timestamp;
+
+        return rev;
+    }
 }

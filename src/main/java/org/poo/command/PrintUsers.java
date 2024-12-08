@@ -3,6 +3,8 @@ package org.poo.command;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.poo.management.Accounts.Account;
+import org.poo.management.Cards.Card;
 import org.poo.management.Database;
 
 public class PrintUsers implements Order {
@@ -33,17 +35,19 @@ public class PrintUsers implements Order {
             ArrayNode accounts = mapper.createArrayNode();
             for (int j = 0; j < db.getAccounts().get(i).size(); j++) {
                 ObjectNode accountNode = mapper.createObjectNode();
+                Account curr = (Account)db.getAccounts().get(i).get(j);
 
-                accountNode.put("IBAN", db.getAccounts().get(i).get(j).getIBAN());
-                accountNode.put("balance", db.getAccounts().get(i).get(j).getBalance());
-                accountNode.put("currency", db.getAccounts().get(i).get(j).getCurrency());
-                accountNode.put("type", db.getAccounts().get(i).get(j).getType());
+                accountNode.put("IBAN", curr.getIBAN());
+                accountNode.put("balance", curr.getBalance());
+                accountNode.put("currency", curr.getCurrency());
+                accountNode.put("type", curr.getType());
 
                 ArrayNode cards = mapper.createArrayNode();
-                for (int k = 0; k < db.getAccounts().get(i).get(j).getCards().size(); k++) {
+                for (int k = 0; k < curr.getCards().size(); k++) {
                     ObjectNode cardNode = mapper.createObjectNode();
-                    cardNode.put("cardNumber", db.getAccounts().get(i).get(j).getCards().get(k).getCardNumber());
-                    cardNode.put("status", db.getAccounts().get(i).get(j).getCards().get(k).getStatus());
+                    Card card = (Card)curr.getCards().get(k);
+                    cardNode.put("cardNumber", card.getCardNumber());
+                    cardNode.put("status", card.getStatus());
 
                     cards.add(cardNode);
                 }
