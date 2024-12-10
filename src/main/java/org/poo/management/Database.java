@@ -10,9 +10,9 @@ import org.poo.management.Accounts.AccountFactory;
 import org.poo.management.Accounts.AccountType;
 import org.poo.management.Cards.Card;
 import org.poo.management.Cards.CardType;
+import org.poo.utils.Pair;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 
 @Getter
 @Setter
@@ -21,7 +21,7 @@ public class Database {
 
     private ArrayList<UserInput> Users = new ArrayList<>();
     private ArrayList<ArrayList<AccountType>> Accounts = new ArrayList<>();
-    private ArrayList<ArrayList<Alias>> Aliases= new ArrayList<>();
+    private ArrayList<Alias> Aliases= new ArrayList<>();
     @Getter
     private static ArrayList<ExchangeInput> Exchange = new ArrayList<>();
 
@@ -52,18 +52,37 @@ public class Database {
         if(from.equals(to))
             return 1;
 
+        if (from.equals(to)) return 1;
+
+        Map<String, List<ExchangeInput>> graph = new HashMap<>();
         for (ExchangeInput exchange : Exchange) {
-            if (exchange.getFrom().equals(from) && exchange.getTo().equals(to))
-                return exchange.getRate();
+            graph.putIfAbsent(exchange.getFrom(), new ArrayList<>());
+            graph.get(exchange.getFrom()).add(exchange);
         }
 
-        for (ExchangeInput exchange1 : Exchange) {
-            for (ExchangeInput exchange2 : Exchange) {
-                if (exchange1.getFrom().equals(from) &&
-                    exchange1.getTo().equals(exchange2.getFrom()) &&
-                    exchange2.getTo().equals(to)) {
+        Queue<Pair<String, Double>> queue = new LinkedList<>();
+        Set<String> visited = new HashSet<>();
+        queue.add(new Pair<>(from, 1.0));
 
-                    return exchange1.getRate() * exchange2.getRate();
+        while (!queue.isEmpty()) {
+            Pair<String, Double> current = queue.poll();
+            String currentCurrency = current.getFirst();
+            double currentRate = current.getSecond();
+
+            visited.add(currentCurrency);
+
+            if (graph.containsKey(currentCurrency)) {
+                for (ExchangeInput neighbor : graph.get(currentCurrency)) {
+                    String neighborCurrency = neighbor.getTo();
+                    double newRate = currentRate * neighbor.getRate();
+
+                    if (neighborCurrency.equals(to)) {
+                        return newRate;
+                    }
+
+                    if (!visited.contains(neighborCurrency)) {
+                        queue.add(new Pair<>(neighborCurrency, newRate));
+                    }
                 }
             }
         }
@@ -90,6 +109,7 @@ public class Database {
 
         UserInput user = this.getUsers().get(i);
         user.addTransaction(new Transactions("New account created", command.getTimestamp()));
+        ((Account) account).addTransaction(new Transactions("New account created", command.getTimestamp()));
     }
 
     public void addCard(CommandInput command) {
@@ -106,6 +126,7 @@ public class Database {
                 ok = 0;
                 UserInput user = this.getUsers().get(i);
                 user.addTransaction(new Transactions("New card created", command.getTimestamp(), ((Card) ((Account) account).getCards().getLast()).getCardNumber(), user.getEmail(), ((Account) account).getIBAN()));
+                ((Account) account).addTransaction(new Transactions("New card created", command.getTimestamp(), ((Card) ((Account) account).getCards().getLast()).getCardNumber(), user.getEmail(), ((Account) account).getIBAN()));
                 return;
             }
         }
@@ -124,6 +145,24 @@ public class Database {
         }
 
         return -1;
+    }
+
+    public Pair<Integer, Integer> findBigIBAN(String IBAN) {
+        int i = -1;
+        int j = -1;
+
+        for (int idxU = 0 ; idxU < Users.size() ; idxU++) {
+            int idxA = 0;
+            for (AccountType account : Accounts.get(idxU))
+            {
+                if (((Account) account).getIBAN().equals(IBAN)) {
+                    return new Pair<>(idxU, idxA);
+                }
+                idxA++;
+            }
+        }
+
+        return new Pair<>(i, j);
     }
 
     public void addFunds(CommandInput command) {
@@ -150,6 +189,9 @@ public class Database {
             return 1;
         }
 
+        UserInput user = this.getUsers().get(i);
+        user.addTransaction(new Transactions("Account couldn't be deleted - there are funds remaining", command.getTimestamp()));
+        curr.addTransaction(new Transactions("Account couldn't be deleted - there are funds remaining", command.getTimestamp()));
         return -1;
     }
 
@@ -176,12 +218,17 @@ public class Database {
             if (i != -1) {
                 UserInput user = this.getUsers().get(idx);
                 user.addTransaction(new Transactions("The card has been destroyed", command.getTimestamp(), command.getCardNumber(), user.getEmail(), ((Account) accounts.get(i)).getIBAN()));
+                ((Account) accounts.get(i)).addTransaction(new Transactions("The card has been destroyed", command.getTimestamp(), command.getCardNumber(), user.getEmail(), ((Account) accounts.get(i)).getIBAN()));
                 return 1;
             }
             idx++;
         }
 
         return -1;
+    }
+
+    public void addAlias(Alias alias) {
+        this.Aliases.add(alias);
     }
 
     public void clear(){

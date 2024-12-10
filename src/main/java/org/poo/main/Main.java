@@ -61,6 +61,7 @@ public final class Main {
             if (isCreated) {
                 action(file.getName(), filepath);
             }
+            Utils.resetRandom();
         }
 
         Checker.calculateScore();
@@ -134,10 +135,33 @@ public final class Main {
                 SetMinimum setMinimum = new SetMinimum(db, commands);
                 setMinimum.execute(commands.getTimestamp());
             }
+            else if (currCommand.equals("setAlias")) {
+                SetAlias setAlias = new SetAlias(db, commands);
+                setAlias.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("splitPayment")) {
+                SplitPayment splitPayment = new SplitPayment(db, commands, objectMapper, output);
+                splitPayment.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("addInterest")) {
+                AddInterest addInterest = new AddInterest(db, commands, objectMapper, output);
+                addInterest.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("changeInterestRate")) {
+                ChangeInterest changeInterest = new ChangeInterest(db, commands, objectMapper, output);
+                changeInterest.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("report")) {
+                Report report = new Report(db, commands, objectMapper, output);
+                report.execute(commands.getTimestamp());
+            }
+            else if (currCommand.equals("spendingsReport")) {
+                ReportSpending reportSpending = new ReportSpending(db, commands, objectMapper, output);
+                reportSpending.execute(commands.getTimestamp());
+            }
         }
 
         db.clear();
-        Utils.resetRandom();
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);

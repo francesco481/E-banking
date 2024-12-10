@@ -6,6 +6,7 @@ import org.poo.fileio.CommandInput;
 import org.poo.management.Cards.Card;
 import org.poo.management.Cards.CardFactory;
 import org.poo.management.Cards.CardType;
+import org.poo.management.Transactions;
 import org.poo.utils.Utils;
 
 import java.util.ArrayList;
@@ -19,6 +20,8 @@ public class Account {
     private String type;
     private double minimum = 0;
     private ArrayList<CardType> cards = new ArrayList<>();
+    private ArrayList<Transactions> transactions = new ArrayList<>();
+    private double interest = -1;
 
     public Account(CommandInput command) {
         this.IBAN = Utils.generateIBAN();
@@ -35,6 +38,10 @@ public class Account {
         }
         CardType card = CardFactory.getCard(type);
         cards.add(card);
+    }
+
+    public void addTransaction(Transactions transaction) {
+        this.transactions.add(transaction);
     }
 
     public void addFunds(double amount) {

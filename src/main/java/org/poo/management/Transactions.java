@@ -3,6 +3,9 @@ package org.poo.management;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 public class Transactions {
@@ -17,6 +20,8 @@ public class Transactions {
     String card = null;
     String IBAN = null;
     String commerciant = null;
+    String error = null;
+    List<String> accounts = new ArrayList<>();
 
     public Transactions() {}
 
@@ -28,6 +33,23 @@ public class Transactions {
         this.amount = amount;
         this.currency = currency;
         this.transferType = transferType;
+    }
+
+    public Transactions(String description, int timestamp, String currency, double amount, List<String> accounts, String error) {
+        this.timestamp = timestamp;
+        this.description = description;
+        this.currency = currency;
+        this.amount = amount;
+        this.accounts = accounts;
+        this.error = error;
+    }
+
+    public Transactions(String description, int timestamp, String currency, double amount, List<String> accounts) {
+        this.timestamp = timestamp;
+        this.description = description;
+        this.currency = currency;
+        this.amount = amount;
+        this.accounts = accounts;
     }
 
     public Transactions(String description, int timestamp, String card, String cardHolder, String IBAN)

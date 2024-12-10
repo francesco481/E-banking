@@ -30,7 +30,6 @@ public class PayOnline implements Order {
     @Override
     public void execute(int timestamp) {
         int i = database.findUser(command.getEmail());
-
         if (i == -1)
             return;
 
@@ -40,28 +39,43 @@ public class PayOnline implements Order {
             for (CardType card :  ((Account) account).getCards()) {
                 if (((Card) card).getCardNumber().equals(command.getCardNumber())) {
                     ok = 0;
-                    if (((Card) card).getStatus().equals("frozen"))
-                    {
+                    if (((Card) card).getStatus().equals("frozen")) {
                         UserInput user = database.getUsers().get(i);
                         user.addTransaction(new Transactions("The card is frozen", timestamp));
+                        ((Account) account).addTransaction(new Transactions("The card is frozen", timestamp));
                         return;
                     }
                     double amount = command.getAmount() * Database.getRate(command.getCurrency(), ((Account) account).getCurrency());
-                    if (account.getBalance() - ((Account) account).getMinimum() >= amount  &&
-                        ((Card) card).getStatus().equals("active")) {
+                    if (account.getBalance() - ((Account) account).getMinimum() >= amount &&
+                            ((Card) card).getStatus().equals("active")) {
                         account.pay(amount);
                         card.pay();
-                        ok = 2;
+
                         UserInput user = database.getUsers().get(i);
+                        ok = 2;
                         user.addTransaction(new Transactions("Card payment", timestamp, command.getCommerciant(), amount));
+                        ((Account) account).addTransaction(new Transactions("Card payment", timestamp, command.getCommerciant(), amount));
+
+                        if (!((Card) card).getCardNumber().equals(command.getCardNumber())) {
+                            ((Account) account).addTransaction(new Transactions("The card has been destroyed", timestamp, command.getCardNumber(), user.getEmail(), ((Account) account).getIBAN()));
+                            user.addTransaction(new Transactions("The card has been destroyed", timestamp, command.getCardNumber(), user.getEmail(), ((Account) account).getIBAN()));
+
+                            ((Account) account).addTransaction(new Transactions("New card created", timestamp, ((Card) card).getCardNumber(), user.getEmail(), ((Account) account).getIBAN()));
+                            user.addTransaction(new Transactions("New card created", timestamp, ((Card) card).getCardNumber(), user.getEmail(), ((Account) account).getIBAN()));
+                        }
+                    }
+                    if (account.getBalance() - ((Account) account).getMinimum() < amount &&
+                            ((Card) card).getStatus().equals("active")) {
+                        UserInput user = database.getUsers().get(i);
+                        user.addTransaction(new Transactions("Insufficient funds", timestamp));
+                        ((Account) account).addTransaction(new Transactions("Insufficient funds", timestamp));
+                    }
+
+                    if (account.getBalance() < ((Account) account).getMinimum()) {
+
                     }
                 }
             }
-        }
-
-        if (ok == 0) {
-            UserInput user = database.getUsers().get(i);
-            user.addTransaction(new Transactions("Insufficient funds", timestamp));
         }
 
         if (ok == 1)

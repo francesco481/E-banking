@@ -27,7 +27,7 @@ public class SendMoney implements Order {
         int ok = 0;
         int st = 0;
         UserInput user1 = null;
-        UserInput user2= null;
+        UserInput user2 = null;
 
         for (ArrayList<AccountType> accounts : this.database.getAccounts()) {
             int i = Database.findIBAN(accounts, account1);
@@ -47,12 +47,20 @@ public class SendMoney implements Order {
             st++;
         }
 
+        if (sender != null && receiver == null) {
+
+        }
+
         if (ok != 2)
             return;
 
         assert sender != null;
-        if (sender.getBalance() < command.getAmount())
+        if (sender.getBalance() < command.getAmount()){
+            user1.addTransaction(new Transactions("Insufficient funds", command.getTimestamp()));
+            ((Account) sender).addTransaction(new Transactions("Insufficient funds", command.getTimestamp()));
             return;
+        }
+
         sender.pay(command.getAmount());
 
         assert receiver != null;
@@ -61,8 +69,10 @@ public class SendMoney implements Order {
 
         assert user1 != null;
         user1.addTransaction(new Transactions(timestamp, command.getDescription(), account1, account2, command.getAmount(), ((Account) sender).getCurrency(), "sent"));
+        ((Account) sender).addTransaction(new Transactions(timestamp, command.getDescription(), account1, account2, command.getAmount(), ((Account) sender).getCurrency(), "sent"));
 
         assert user2 != null;
-        user2.addTransaction(new Transactions(timestamp, command.getDescription(), account2, account1, amount, ((Account) receiver).getCurrency(), "received"));
+        user2.addTransaction(new Transactions(timestamp, command.getDescription(), account1, account2, amount, ((Account) receiver).getCurrency(), "received"));
+        ((Account) receiver).addTransaction(new Transactions(timestamp, command.getDescription(), account1, account2, amount, ((Account) receiver).getCurrency(), "received"));
     }
 }

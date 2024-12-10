@@ -44,6 +44,7 @@ public class CheckStatus implements Order {
                                 curr.setStatus("frozen");
                                 UserInput user = database.getUsers().get(st);
                                 user.addTransaction(new Transactions("You have reached the minimum amount of funds, the card will be frozen", timestamp));
+                                currAcc.addTransaction(new Transactions("You have reached the minimum amount of funds, the card will be frozen", timestamp));
                             }
                         }
                     }

@@ -7,6 +7,7 @@ import org.poo.fileio.CommandInput;
 import org.poo.fileio.UserInput;
 import org.poo.management.Database;
 import org.poo.management.Transactions;
+import org.poo.utils.ShowTransaction;
 
 public class PrintTransactions implements Order {
     Database database;
@@ -28,41 +29,7 @@ public class PrintTransactions implements Order {
                 ArrayNode transactionsArray = mapper.createArrayNode();
 
                 for (Transactions transaction : user.getTransactions()) {
-                    ObjectNode transactionNode = mapper.createObjectNode();
-                    transactionNode.put("timestamp", transaction.getTimestamp());
-                    transactionNode.put("description", transaction.getDescription());
-
-                    if (transaction.getAmount() != -1) {
-                        transactionNode.put("amount", transaction.getAmount());
-                    }
-                    if (transaction.getCommerciant() != null) {
-                        transactionNode.put("commerciant", transaction.getCommerciant());
-                    }
-
-                    if (transaction.getSenderIBAN() != null) {
-                        transactionNode.put("senderIBAN", transaction.getSenderIBAN());
-                    }
-                    if (transaction.getReceiverIBAN() != null) {
-                        transactionNode.put("receiverIBAN", transaction.getReceiverIBAN());
-                    }
-                    if (transaction.getAmount() != -1 && transaction.getCurrency() != null) {
-                        transactionNode.put("amount", transaction.getAmount() + " " + transaction.getCurrency());
-                    }
-                    if (transaction.getTransferType() != null) {
-                        transactionNode.put("transferType", transaction.getTransferType());
-                    }
-
-                    if (transaction.getCard() != null) {
-                        transactionNode.put("card", transaction.getCard());
-                    }
-                    if (transaction.getCardHolder() != null) {
-                        transactionNode.put("cardHolder", transaction.getCardHolder());
-                    }
-                    if (transaction.getIBAN() != null) {
-                        transactionNode.put("account", transaction.getIBAN());
-                    }
-
-                    transactionsArray.add(transactionNode);
+                    ShowTransaction.extract(mapper, transaction, transactionsArray);
                 }
 
                 ObjectNode outputNode = mapper.createObjectNode();
@@ -75,5 +42,4 @@ public class PrintTransactions implements Order {
             }
         }
     }
-
 }
