@@ -1,19 +1,31 @@
 package org.poo.utils;
 
-import com.fasterxml.jackson.core.TreeCodec;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.poo.management.Transactions;
 
-public class ShowTransaction {
-    public static void extract(ObjectMapper mapper, Transactions transaction, ArrayNode transactionsArray) {
+public final class ShowTransaction {
+    private ShowTransaction() {
+
+    }
+    /**
+     * Extracts transaction details and adds them to an array node.
+     * This method converts a transaction object into a structured JSON node, including
+     * various transaction details such as timestamps, descriptions, amounts, and involved accounts.
+     * It also handles errors if any are present.
+     *
+     * @param mapper the `ObjectMapper` used to create JSON nodes.
+     * @param transaction the `Transactions` object containing transaction details.
+     * @param transactionsArray the `ArrayNode` to which the transaction details are added.
+     */
+    public static void extract(final ObjectMapper mapper, final Transactions transaction,
+                               final ArrayNode transactionsArray) {
         ObjectNode transactionNode = mapper.createObjectNode();
         transactionNode.put("timestamp", transaction.getTimestamp());
         transactionNode.put("description", transaction.getDescription());
 
-        if (!transaction.getAccounts().isEmpty())
-        {
+        if (!transaction.getAccounts().isEmpty()) {
             transactionNode.put("currency", transaction.getCurrency());
         }
         if (transaction.getAmount() != -1) {
@@ -29,8 +41,10 @@ public class ShowTransaction {
         if (transaction.getReceiverIBAN() != null) {
             transactionNode.put("receiverIBAN", transaction.getReceiverIBAN());
         }
-        if (transaction.getAmount() != -1 && transaction.getCurrency() != null  &&  transaction.getAccounts().isEmpty()) {
-            transactionNode.put("amount", transaction.getAmount() + " " + transaction.getCurrency());
+        if (transaction.getAmount() != -1 && transaction.getCurrency() != null
+                &&  transaction.getAccounts().isEmpty()) {
+            transactionNode.put("amount", transaction.getAmount() + " "
+                    + transaction.getCurrency());
         }
 
         if (transaction.getTransferType() != null) {
@@ -43,11 +57,11 @@ public class ShowTransaction {
         if (transaction.getCardHolder() != null) {
             transactionNode.put("cardHolder", transaction.getCardHolder());
         }
-        if (transaction.getIBAN() != null) {
-            transactionNode.put("account", transaction.getIBAN());
+        if (transaction.getIban() != null) {
+            transactionNode.put("account", transaction.getIban());
         }
 
-        if(!transaction.getAccounts().isEmpty()  &&  transaction.getError() != null) {
+        if (!transaction.getAccounts().isEmpty()  &&  transaction.getError() != null) {
             ArrayNode involvedAccounts = mapper.createArrayNode();
             for (String account : transaction.getAccounts()) {
                 involvedAccounts.add(account);
@@ -56,7 +70,7 @@ public class ShowTransaction {
             transactionNode.put("error", transaction.getError());
         }
 
-        if(!transaction.getAccounts().isEmpty()  &&  transaction.getError() == null) {
+        if (!transaction.getAccounts().isEmpty()  &&  transaction.getError() == null) {
             ArrayNode involvedAccounts = mapper.createArrayNode();
             for (String account : transaction.getAccounts()) {
                 involvedAccounts.add(account);

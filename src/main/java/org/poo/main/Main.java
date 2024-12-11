@@ -5,9 +5,24 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.poo.checker.Checker;
 import org.poo.checker.CheckerConstants;
-import org.poo.command.*;
+import org.poo.command.Report;
+import org.poo.command.AddFunds;
+import org.poo.command.AddInterest;
+import org.poo.command.AddAccount;
+import org.poo.command.ChangeInterest;
+import org.poo.command.CheckStatus;
+import org.poo.command.CreateCard;
+import org.poo.command.DeleteAccount;
+import org.poo.command.DeleteCard;
+import org.poo.command.PayOnline;
+import org.poo.command.PrintTransactions;
+import org.poo.command.PrintUsers;
+import org.poo.command.ReportSpending;
+import org.poo.command.SendMoney;
+import org.poo.command.SetAlias;
+import org.poo.command.SetMinimum;
+import org.poo.command.SplitPayment;
 import org.poo.fileio.CommandInput;
-import org.poo.fileio.ExchangeInput;
 import org.poo.fileio.ObjectInput;
 import org.poo.management.Database;
 import org.poo.utils.Utils;
@@ -45,8 +60,14 @@ public final class Main {
             File resultFile = new File(String.valueOf(path));
             for (File file : Objects.requireNonNull(resultFile.listFiles())) {
                 boolean delete = file.delete();
+                if (!delete) {
+                    System.out.println("Failed to delete " + file);
+                }
             }
-            resultFile.delete();
+            boolean rez = resultFile.delete();
+            if (!rez) {
+                return;
+            }
         }
         Files.createDirectories(path);
 
@@ -84,80 +105,82 @@ public final class Main {
         db.addUsers(inputData.getUsers());
         db.addExchanges(inputData.getExchangeRates());
 
-        for (CommandInput commands : inputData.getCommands())
-        {
+        for (CommandInput commands : inputData.getCommands())  {
             String currCommand = commands.getCommand();
-            if (currCommand.equals("printUsers")) {
-                PrintUsers printUsers = new PrintUsers(db, objectMapper, output);
-                printUsers.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("printTransactions")) {
-                PrintTransactions printTransactions = new PrintTransactions(db, objectMapper, output, commands);
-                printTransactions.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("addAccount")) {
-                AddAccount addAccount = new AddAccount(db, commands);
-                addAccount.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("createCard")) {
-                CreateCard createCard = new CreateCard(db, commands);
-                createCard.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("createOneTimeCard")) {
-                CreateCard createCard = new CreateCard(db, commands);
-                createCard.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("addFunds")) {
-                AddFunds addFunds = new AddFunds(db, commands);
-                addFunds.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("deleteAccount")) {
-                DeleteAccount deleteAccount = new DeleteAccount(db, commands, objectMapper, output);
-                deleteAccount.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("deleteCard")) {
-                DeleteCard deleteCard = new DeleteCard(db, commands, objectMapper, output);
-                deleteCard.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("payOnline")) {
-                PayOnline payOnline = new PayOnline(db, commands, objectMapper, output);
-                payOnline.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("sendMoney")) {
-                SendMoney sendMoney = new SendMoney(db, commands);
-                sendMoney.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("checkCardStatus")) {
-                CheckStatus checkStatus = new CheckStatus(db, commands, objectMapper, output);
-                checkStatus.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("setMinimumBalance")) {
-                SetMinimum setMinimum = new SetMinimum(db, commands);
-                setMinimum.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("setAlias")) {
-                SetAlias setAlias = new SetAlias(db, commands);
-                setAlias.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("splitPayment")) {
-                SplitPayment splitPayment = new SplitPayment(db, commands, objectMapper, output);
-                splitPayment.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("addInterest")) {
-                AddInterest addInterest = new AddInterest(db, commands, objectMapper, output);
-                addInterest.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("changeInterestRate")) {
-                ChangeInterest changeInterest = new ChangeInterest(db, commands, objectMapper, output);
-                changeInterest.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("report")) {
-                Report report = new Report(db, commands, objectMapper, output);
-                report.execute(commands.getTimestamp());
-            }
-            else if (currCommand.equals("spendingsReport")) {
-                ReportSpending reportSpending = new ReportSpending(db, commands, objectMapper, output);
-                reportSpending.execute(commands.getTimestamp());
+            switch (currCommand) {
+                case "printUsers" -> {
+                    PrintUsers printUsers = new PrintUsers(db, objectMapper, output);
+                    printUsers.execute(commands.getTimestamp());
+                }
+                case "printTransactions" -> {
+                    PrintTransactions printTransactions = new PrintTransactions(db, objectMapper,
+                                                                               output, commands);
+                    printTransactions.execute(commands.getTimestamp());
+                }
+                case "addAccount" -> {
+                    AddAccount addAccount = new AddAccount(db, commands);
+                    addAccount.execute(commands.getTimestamp());
+                }
+                case "createCard", "createOneTimeCard" -> {
+                    CreateCard createCard = new CreateCard(db, commands);
+                    createCard.execute(commands.getTimestamp());
+                }
+                case "addFunds" -> {
+                    AddFunds addFunds = new AddFunds(db, commands);
+                    addFunds.execute(commands.getTimestamp());
+                }
+                case "deleteAccount" -> {
+                    DeleteAccount deleteAccount = new DeleteAccount(db, commands,
+                                                            objectMapper, output);
+                    deleteAccount.execute(commands.getTimestamp());
+                }
+                case "deleteCard" -> {
+                    DeleteCard deleteCard = new DeleteCard(db, commands);
+                    deleteCard.execute(commands.getTimestamp());
+                }
+                case "payOnline" -> {
+                    PayOnline payOnline = new PayOnline(db, commands, objectMapper, output);
+                    payOnline.execute(commands.getTimestamp());
+                }
+                case "sendMoney" -> {
+                    SendMoney sendMoney = new SendMoney(db, commands);
+                    sendMoney.execute(commands.getTimestamp());
+                }
+                case "checkCardStatus" -> {
+                    CheckStatus checkStatus = new CheckStatus(db, commands, objectMapper, output);
+                    checkStatus.execute(commands.getTimestamp());
+                }
+                case "setMinimumBalance" -> {
+                    SetMinimum setMinimum = new SetMinimum(db, commands);
+                    setMinimum.execute(commands.getTimestamp());
+                }
+                case "setAlias" -> {
+                    SetAlias setAlias = new SetAlias(db, commands);
+                    setAlias.execute(commands.getTimestamp());
+                }
+                case "splitPayment" -> {
+                    SplitPayment splitPayment = new SplitPayment(db, commands);
+                    splitPayment.execute(commands.getTimestamp());
+                }
+                case "addInterest" -> {
+                    AddInterest addInterest = new AddInterest(db, commands, objectMapper, output);
+                    addInterest.execute(commands.getTimestamp());
+                }
+                case "changeInterestRate" -> {
+                    ChangeInterest changeInterest = new ChangeInterest(db, commands,
+                                                                       objectMapper, output);
+                    changeInterest.execute(commands.getTimestamp());
+                }
+                case "report" -> {
+                    Report report = new Report(db, commands, objectMapper, output);
+                    report.execute(commands.getTimestamp());
+                }
+                case "spendingsReport" -> {
+                    ReportSpending reportSpending = new ReportSpending(db, commands,
+                                                                       objectMapper, output);
+                    reportSpending.execute(commands.getTimestamp());
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + currCommand);
             }
         }
 

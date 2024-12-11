@@ -1,29 +1,27 @@
 package org.poo.command;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.poo.fileio.CommandInput;
-import org.poo.fileio.UserInput;
 import org.poo.management.Database;
 
-import java.io.Serializable;
-import java.util.ArrayList;
+public final class DeleteCard implements Order {
+    private final Database database;
+    private final CommandInput command;
 
-public class DeleteCard implements Order {
-    Database database;
-    CommandInput command;
-    ObjectMapper mapper;
-    ArrayNode output;
-
-    public DeleteCard(Database database, CommandInput command, ObjectMapper mapper, ArrayNode output) {
+    public DeleteCard(final Database database, final CommandInput command) {
         this.database = database;
         this.command = command;
-        this.mapper = mapper;
-        this.output = output;
     }
 
+    /**
+     * Executes the command to delete a card from the database.
+     * This method removes the card specified in the command input
+     * and ensures the database reflects the updated state.
+     *
+     * @param timestamp the timestamp at which the command is executed.
+     *                  Used for logging or auditing the operation.
+     */
     @Override
-    public void execute(int timestamp) {
+    public void execute(final int timestamp) {
         database.deleteCard(command);
     }
 }

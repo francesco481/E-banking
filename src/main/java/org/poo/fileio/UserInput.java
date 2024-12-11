@@ -12,11 +12,16 @@ public final class UserInput {
     private String firstName;
     private String lastName;
     private String email;
-
     private ArrayList<Transactions> transactions = new ArrayList<>();
 
-    public void addTransaction(Transactions transactions)
-    {
-        this.transactions.add(transactions);
+    /**
+     * Adds a transaction to the list of transactions for this account.
+     * This method appends the provided transaction object to the internal list,
+     * allowing it to be tracked as part of the account's transaction history.
+     *
+     * @param transaction the transaction to be added to the account.
+     */
+    public void addTransaction(final Transactions transaction) {
+        this.transactions.add(transaction);
     }
 }

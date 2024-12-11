@@ -9,21 +9,31 @@ import org.poo.management.Database;
 import org.poo.management.Transactions;
 import org.poo.utils.ShowTransaction;
 
-public class PrintTransactions implements Order {
-    Database database;
-    ObjectMapper mapper;
-    ArrayNode output;
-    CommandInput command;
+public final class PrintTransactions implements Order {
+    private final Database database;
+    private final ObjectMapper mapper;
+    private final ArrayNode output;
+    private final CommandInput command;
 
-    public PrintTransactions(Database database, ObjectMapper mapper, ArrayNode output, CommandInput command) {
+    public PrintTransactions(final Database database, final ObjectMapper mapper,
+                             final ArrayNode output, final CommandInput command) {
         this.database = database;
         this.mapper = mapper;
         this.output = output;
         this.command = command;
     }
 
+    /**
+     * Executes the command to print all transactions for a specific user.
+     * This method retrieves the transactions associated with the user's email and
+     * formats them into a JSON array. The resulting JSON is used to display the
+     * user's transaction history.
+     *
+     * @param timestamp the timestamp at which the command is executed.
+     *                  This is typically used for logging or tracking the operation.
+     */
     @Override
-    public void execute(int timestamp) {
+    public void execute(final int timestamp) {
         for (UserInput user : database.getUsers()) {
             if (user.getEmail().equals(command.getEmail())) {
                 ArrayNode transactionsArray = mapper.createArrayNode();

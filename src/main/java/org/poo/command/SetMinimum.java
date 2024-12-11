@@ -7,32 +7,32 @@ import org.poo.management.Database;
 
 import java.util.ArrayList;
 
-public class SetMinimum implements Order {
-    Database database;
-    CommandInput command;
+public final class SetMinimum implements Order {
+    private final Database database;
+    private final CommandInput command;
 
-    public SetMinimum(Database database, CommandInput command) {
+    public SetMinimum(final Database database, final CommandInput command) {
         this.database = database;
         this.command = command;
     }
 
+    /**
+     * Executes the command to set the minimum balance for a specific account.
+     * This method finds the specified account by its IBAN and updates its minimum balance
+     * to the provided amount. If the account is not found, the operation does nothing.
+     *
+     * @param timestamp the timestamp at which the command is executed.
+     *                  Used for logging or tracking the operation.
+     */
     @Override
-    public void execute(int timestamp) {
-        int ok = 1;
-
+    public void execute(final int timestamp) {
         for (ArrayList<AccountType> accounts : database.getAccounts()) {
             for (AccountType account : accounts) {
-                if (((Account) account).getIBAN().equals(command.getAccount()))
-                {
+                if (((Account) account).getIban().equals(command.getAccount())) {
                     ((Account) account).setMinimum(command.getAmount());
-                    ok = 0;
                     return;
                 }
             }
-        }
-
-        if (ok == 1){
-
         }
     }
 }

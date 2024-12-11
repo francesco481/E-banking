@@ -8,24 +8,28 @@ import java.util.List;
 
 @Getter
 @Setter
-public class Transactions {
-    int timestamp = -1;
-    String description = null;
-    String senderIBAN = null;
-    String receiverIBAN = null;
-    double amount = -1;
-    String currency = null;
-    String transferType = null;
-    String cardHolder = null;
-    String card = null;
-    String IBAN = null;
-    String commerciant = null;
-    String error = null;
-    List<String> accounts = new ArrayList<>();
+public final class Transactions {
+    private int timestamp = -1;
+    private String description = null;
+    private String senderIBAN = null;
+    private String receiverIBAN = null;
+    private double amount = -1;
+    private String currency = null;
+    private String transferType = null;
+    private String cardHolder = null;
+    private String card = null;
+    private String iban = null;
+    private String commerciant = null;
+    private String error = null;
+    private List<String> accounts = new ArrayList<>();
 
-    public Transactions() {}
+    public Transactions() {
 
-    public Transactions(int timestamp, String description, String senderIBAN, String receiverIBAN, double amount, String currency, String transferType) {
+    }
+
+    public Transactions(final int timestamp, final String description, final String senderIBAN,
+                        final String receiverIBAN, final double amount, final String currency,
+                        final String transferType) {
         this.timestamp = timestamp;
         this.description = description;
         this.senderIBAN = senderIBAN;
@@ -35,7 +39,8 @@ public class Transactions {
         this.transferType = transferType;
     }
 
-    public Transactions(String description, int timestamp, String currency, double amount, List<String> accounts, String error) {
+    public Transactions(final String description, final int timestamp, final String currency,
+                        final double amount, final List<String> accounts, final String error) {
         this.timestamp = timestamp;
         this.description = description;
         this.currency = currency;
@@ -44,7 +49,8 @@ public class Transactions {
         this.error = error;
     }
 
-    public Transactions(String description, int timestamp, String currency, double amount, List<String> accounts) {
+    public Transactions(final String description, final int timestamp, final String currency,
+                        final double amount, final List<String> accounts) {
         this.timestamp = timestamp;
         this.description = description;
         this.currency = currency;
@@ -52,23 +58,24 @@ public class Transactions {
         this.accounts = accounts;
     }
 
-    public Transactions(String description, int timestamp, String card, String cardHolder, String IBAN)
-    {
+    public Transactions(final String description, final int timestamp, final String card,
+                        final String cardHolder, final String iban) {
         this.description = description;
         this.timestamp = timestamp;
         this.card = card;
         this.cardHolder = cardHolder;
-        this.IBAN = IBAN;
+        this.iban = iban;
     }
 
-    public Transactions(String description, int timestamp, String commerciant, double amount) {
+    public Transactions(final String description, final int timestamp,
+                        final String commerciant, final double amount) {
         this.description = description;
         this.timestamp = timestamp;
         this.amount = amount;
         this.commerciant = commerciant;
     }
 
-    public Transactions(String description, int timestamp) {
+    public Transactions(final String description, final int timestamp) {
         this.description = description;
         this.timestamp = timestamp;
     }

@@ -1,13 +1,13 @@
 package org.poo.management;
 
-public class Alias {
-    String email;
-    String name;
-    String IBAN;
+public final class Alias {
+    private final String email;
+    private final String name;
+    private final String iban;
 
-    public Alias(String email, String name, String IBAN) {
+    public Alias(final String email, final String name, final String iban) {
         this.email = email;
         this.name = name;
-        this.IBAN = IBAN;
+        this.iban = iban;
     }
 }
