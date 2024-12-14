@@ -1,3 +1,27 @@
+commit fc703bafcc5c428bc03286ffac06112965c5fca9
+Author: francesco481 <francescomartinut18@gmail.com>
+Date:   Wed Dec 11 09:31:39 2024 +0200
+
+    fixed coding style
+
+commit a29563464893c6f6fd7ad6277d48af40a1797648
+Author: francesco481 <francescomartinut18@gmail.com>
+Date:   Tue Dec 10 15:40:57 2024 +0200
+
+    fixed bugs
+
+commit 93cee887f73b8c9b2e5f7d89e5058e355c3ede5b
+Author: francesco481 <francescomartinut18@gmail.com>
+Date:   Sun Dec 8 19:04:20 2024 +0200
+
+    beofre alias
+
+commit f7877e446ec3e3b7c73c0c9485b313554b2563a2
+Author: francesco481 <francescomartinut18@gmail.com>
+Date:   Sun Dec 8 14:24:56 2024 +0200
+
+    before transactions
+
 commit 05f11735795b2c8de79db8f2fd6adeb8ed0a2c3f
 Author: Martinut Francesco <francescomartinut18@gmail.com>
 Date:   Sat Dec 7 21:21:06 2024 +0200
