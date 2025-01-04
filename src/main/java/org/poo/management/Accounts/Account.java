@@ -3,8 +3,9 @@ package org.poo.management.Accounts;
 import lombok.Getter;
 import lombok.Setter;
 import org.poo.fileio.CommandInput;
-import org.poo.management.Cards.CardFactory;
-import org.poo.management.Cards.CardType;
+import org.poo.management.Cards.Card;
+import org.poo.management.Cards.ClassicCard;
+import org.poo.management.Cards.OneCard;
 import org.poo.management.Transactions;
 import org.poo.utils.Utils;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class Account {
     private String currency;
     private String type;
     private double minimum = 0;
-    private ArrayList<CardType> cards = new ArrayList<>();
+    private ArrayList<Card> cards = new ArrayList<>();
     private ArrayList<Transactions> transactions = new ArrayList<>();
     private double interest = -1;
 
@@ -38,11 +39,12 @@ public class Account {
      *                including the desired type.
      */
     public void addCard(final CommandInput command) {
-        int ok = 1;
+        Card card;
         if (command.getCommand().equals("createCard")) {
-            ok = 0;
+            card = new ClassicCard();
+        } else {
+            card = new OneCard();
         }
-        CardType card = CardFactory.getCard(ok);
         cards.add(card);
     }
 

@@ -4,6 +4,7 @@ import org.poo.fileio.CommandInput;
 import org.poo.fileio.UserInput;
 import org.poo.management.Accounts.Account;
 import org.poo.management.Accounts.AccountType;
+import org.poo.management.Alias;
 import org.poo.management.Database;
 import org.poo.management.Transactions;
 
@@ -38,6 +39,7 @@ public final class SendMoney implements Order {
         int st = 0;
         UserInput user1 = null;
         UserInput user2 = null;
+        int findAlias = 0;
 
         for (ArrayList<AccountType> accounts : this.database.getAccounts()) {
             int i = Database.findIBAN(accounts, account1);
@@ -58,7 +60,28 @@ public final class SendMoney implements Order {
         }
 
         if (sender != null && receiver == null) {
-            return; //add alias for next part
+            for (Alias alias : database.getAliases()) {
+                if (alias.getName().equals(account2)) {
+
+                    st = 0;
+                    for (ArrayList<AccountType> accounts : this.database.getAccounts()) {
+
+                        int i = Database.findIBAN(accounts, alias.getIban());
+                        if (i != -1) {
+                            ok++;
+                            receiver = accounts.get(i);
+                            user2 = database.getUsers().get(st);
+                            findAlias = 1;
+                        }
+
+                        st++;
+                    }
+                }
+            }
+
+            if (receiver == null) {
+                return;
+            }
         }
 
         if (ok != 2) {
@@ -77,7 +100,6 @@ public final class SendMoney implements Order {
 
         sender.pay(command.getAmount());
 
-        assert receiver != null;
         double amount  = command.getAmount() * Database.getRate(((Account) sender).getCurrency(),
                                                              ((Account) receiver).getCurrency());
         ((Account) receiver).addFunds(amount);

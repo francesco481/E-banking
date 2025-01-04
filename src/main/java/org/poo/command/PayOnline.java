@@ -8,7 +8,6 @@ import org.poo.fileio.UserInput;
 import org.poo.management.Accounts.Account;
 import org.poo.management.Accounts.AccountType;
 import org.poo.management.Cards.Card;
-import org.poo.management.Cards.CardType;
 import org.poo.management.Database;
 import org.poo.management.Transactions;
 
@@ -51,10 +50,10 @@ public final class PayOnline implements Order {
         ArrayList<AccountType> curr = database.getAccounts().get(i);
         int ok = 1;
         for (AccountType account : curr) {
-            for (CardType card : ((Account) account).getCards()) {
-                if (((Card) card).getCardNumber().equals(command.getCardNumber())) {
+            for (Card card : ((Account) account).getCards()) {
+                if (card.getCardNumber().equals(command.getCardNumber())) {
                     ok = 0;
-                    if (((Card) card).getStatus().equals("frozen")) {
+                    if (card.getStatus().equals("frozen")) {
                         UserInput user = database.getUsers().get(i);
                         Transactions transactions  = new Transactions("The card is frozen",
                                                                                 timestamp);
@@ -65,9 +64,9 @@ public final class PayOnline implements Order {
                     double amount = command.getAmount() * Database.getRate(command.getCurrency(),
                                                             ((Account) account).getCurrency());
                     if (account.getBalance() - ((Account) account).getMinimum() >= amount
-                            && ((Card) card).getStatus().equals("active")) {
+                            && card.getStatus().equals("active")) {
                         account.pay(amount);
-                        card.pay();
+                        card.execPay();
 
                         UserInput user = database.getUsers().get(i);
                         ok = 2;
@@ -76,7 +75,7 @@ public final class PayOnline implements Order {
                         user.addTransaction(transactions);
                         ((Account) account).addTransaction(transactions);
 
-                        if (!((Card) card).getCardNumber().equals(command.getCardNumber())) {
+                        if (!card.getCardNumber().equals(command.getCardNumber())) {
                             Transactions transactions1 = new Transactions("The card has been "
                                     + "destroyed", timestamp, command.getCardNumber(),
                                                      user.getEmail(),
@@ -86,7 +85,7 @@ public final class PayOnline implements Order {
                             user.addTransaction(transactions1);
 
                             Transactions transactions2 = new Transactions("New card created",
-                                    timestamp, ((Card) card).getCardNumber(), user.getEmail(),
+                                    timestamp, card.getCardNumber(), user.getEmail(),
                                     ((Account) account).getIban());
 
                             ((Account) account).addTransaction(transactions2);
@@ -94,7 +93,7 @@ public final class PayOnline implements Order {
                         }
                     }
                     if (account.getBalance() - ((Account) account).getMinimum() < amount
-                            && ((Card) card).getStatus().equals("active")) {
+                            && card.getStatus().equals("active")) {
                         UserInput user = database.getUsers().get(i);
                         Transactions transactions = new Transactions("Insufficient funds",
                                                                     timestamp);

@@ -1,45 +1,140 @@
-# Project Assignment POO  - J. POO Morgan - Phase One
+# MARTINUT FRANCESCO 324CA
 
-![](https://s.yimg.com/ny/api/res/1.2/aN0SfZTtLF5hLNO0wIN3gg--/YXBwaWQ9aGlnaGxhbmRlcjt3PTcwNTtoPTQyNztjZj13ZWJw/https://o.aolcdn.com/hss/storage/midas/b23d8b7f62a50a7b79152996890aa052/204855412/fit.gif)
+# e-banking
 
-#### Assignment Link: [https://ocw.cs.pub.ro/courses/poo-ca-cd/teme/2024/proiect-e1](https://ocw.cs.pub.ro/courses/poo-ca-cd/teme/2024/proiect-e1)
+**Description**:
+The `e-banking` project is a simple e-banking system designed to handle different types of
+commands. It aims to provide a basic interface for managing bank accounts, creating cards,
+performing transactions, and managing user commands efficiently.
 
-## Skel Structure
+## Features
+- **Account Creation**:
+  - **Savings Account**: Create a savings account with a unique ID.
+  - **Classic Account**: Create a standard checking account with a unique ID.
+- **Card Creation**:
+  - **One-Time Card**: Generate a one-time use card for online transactions.
+  - **Classic Card**: Issue a regular card for general use.
+- **Transaction History**: View a history of transactions for each account.
+- **Check Card Status**: Check whether a card is active or blocked.
+- **Pay Online**: Make payments for online services directly from the bank account.
+- **Send Money Between Accounts**: Transfer money between different bank accounts.
 
-* src/
-    * checker/ - checker files
-    * fileio/ - contains classes used to read data from the json files
-    * main/
-        * Main - the Main class runs the checker on your implementation. Add the entry point to your implementation in it. Run Main to test your implementation from the IDE or from command line.
-        * Test - run the main method from Test class with the name of the input file from the command line and the result will be written
-          to the out.txt file. Thus, you can compare this result with ref.
-* input/ - contains the tests in JSON format
-* ref/ - contains all reference output for the tests in JSON format
+### Implementation Details
 
-## Tests
+- **Data Structures**:
+  - **Accounts**: An `ArrayList<ArrayList<AccountType>>` holds multiple lists of accounts,
+categorized by account type (`savings`, `classic`). Each nested list contains accounts
+specific to that type.
+  - **Cards**: An `ArrayList<CardType>` is used to store all cards. Each card has an ID and an
+associated status (active or blocked) and type (`one-time` or `classic`).
+  - **Transactions**: A list maintains a log of all transactions for each account, recording
+details such as transaction type (deposit, online payment, transfer), amount, and timestamp.
 
-Tests Basic 1 - 8: Infrastructure \
-Tests Functional 9 - 17: Advanced \
-Tests Flow 18 - 20: Large Input
+- **Commands and User Interface**:
+  - The system supports a command-line interface where users input commands to interact with the
+banking system. Each command is parsed, validated, and executed accordingly. Examples include
+creating accounts, generating cards, checking balances, making payments, and transferring
+money. For example, to create a new savings account, a user might input:
+`create account savings`. To check the balance of an account, the command would be:
+`balance <account_id>`.
 
-1. test01_create - 2p
-2. test02_delete - 2p
-3. test03_one_time_card - 2p
-4. test04_funds - 2p
-5. test05_money_flow - 2p
-6. test06_non_existing - 2p
-7. test07_send_money_part1 - 3p
-8. test08_send_money_part2 - 3p
-9. test09_print_transactions - 3p
-10. test10_errors - 3p
-11. test11_card_status - 5p
-12. test12_continuous_payments - 5p
-13. test13_savings_account - 5p
-14. test14_split_payments - 5p
-15. test15_every_payment - 5p
-16. test16_report - 5p
-17. test17_spendings_report - 5p
-18. test18_large_input_1 - 7p
-19. test19_large_input_2 - 7p
-20. test19_large_input_3 - 7p
+- **Error Handling**:
+  - The implementation includes error handling to manage invalid inputs, insufficient funds, and
+non-existent accounts or cards. Appropriate error messages are displayed to guide users and
+maintain system integrity.
+
+- **Security**:
+  - The implementation aims to ensure the security of financial transactions. This includes
+validation checks for account and card details, and mechanisms to prevent unauthorized
+access to accounts or cards.
+
+## Core Functionality
+
+The `e-banking` project provides essential banking services to manage accounts, cards,
+transactions, and payments effectively. Below are the core functionalities supported
+by the system:
+
+### Account Management:
+- **Account Creation**: The system supports creating both savings and classic checking accounts.
+Each account is identified by a unique account ID and stores essential information such as
+account balance and account type.
+- **Deposit and Withdrawal**: Users can deposit and transfer funds from their accounts. The
+system validates transactions to ensure sufficient funds are available for withdrawals.
+- **Check Balance**: Users can check their current account balance, helping them track their
+financial status at any time.
+- **Change Interest Rate for Savings Accounts**: The system allows administrators to set and
+update interest rates for savings accounts, helping users grow their savings over time.
+
+### Card Management:
+- **Card Creation**: Users can create one-time use or classic cards. Each card has an ID and an
+associated status (active or blocked) and type (`one-time` or `classic`).
+- **Check Card Status**: Users can verify the status of a specific card to ensure it is usable for
+transactions. Cards can be blocked if necessary for security reasons.
+
+### Transaction History:
+- The system maintains a comprehensive history of all transactions for each account, including
+- deposits, withdrawals, online payments, and money transfers. Users can view their transaction
+- history to track their financial activity and understand their spending patterns.
+
+### Online Payments:
+- Users can make online payments directly from their accounts. This functionality supports seamless
+transactions with merchants and ensures payments are processed only if there is sufficient balance
+in the account.
+
+### Money Transfers:
+- Users have the ability to transfer money between different bank accounts. The system checks that
+both the source and destination accounts exist and that the transfer amount does not exceed the
+available balance in the source account. This functionality supports inter-account transfers and
+enables users to move funds between their accounts or to other users.
+
+### Split Payment:
+- Users can split a payment across multiple bank accounts. This feature allows users to allocate
+parts of a payment to different accounts, facilitating flexible budgeting and spending management
+
+
+## Design Patterns
+
+- **Singleton for Database**:
+  - To manage database connections efficiently and ensure that only one instance of the database
+  exists across the system, a singleton pattern is used. This prevents multiple instances and
+  potential conflicts in managing the data.
+  - ```java
+    private static Database db = new Database();
+    ```
+
+- **Factory for Card and Account**:
+  - A factory pattern is used to create instances of `Account` and `Card`. This pattern abstracts
+the creation process and ensures thatthe right type of object is created based on specific criteria
+  - For instance, `AccountFactory` can produce both savings and classic accounts, while `CardFactory`
+can produce one-time or classic cards based on the user’s requirements.
+
+- **Command Pattern for Commands**:
+  - The `Command Pattern` is used to encapsulate the different commands (like creating an account,
+  generating a card, processing a payment, and transferring money) into command objects. Each
+  command object executes a specific action on the bank system. This pattern makes the system
+  extensible and allows for easy addition of new commands without changing the existing ones.
+  - For example, a `CreateAccountCommand` object would encapsulate the details of account creation,
+  validating the type and details before creating the account.
+
+- **Database Management**:
+  - **Singleton Instance**: A singleton instance is used for managing the database
+  (`Database db = new Database();`). This ensures there is only one instance of the database across
+  the application, preventing duplication and potential issues with data management.
+  - **User Inputs**: An array list (`ArrayList<UserInput> users`) is used to store user input
+  data. This list tracks all user activities and interactions with the banking system.
+  - **Accounts**: An array list (`ArrayList<ArrayList<AccountType>> accounts`) holds multiple lists
+  of accounts, categorized by account type (`savings`, `classic`). Each list contains accounts
+  specific to that type.
+  - **Aliases**: An array list (`ArrayList<Alias> aliases`) is used to manage aliases for account
+  holders, providing an additional layer of identification for users.
+  - **Exchange Inputs**: A static array list (`ArrayList<ExchangeInput> exchange`)
+  maintains data related to currency exchange transactions.
+
+```java
+private static Database db = new Database();
+
+private ArrayList<UserInput> users = new ArrayList<>();
+private ArrayList<ArrayList<AccountType>> accounts = new ArrayList<>();
+private ArrayList<Alias> aliases = new ArrayList<>();
+private static ArrayList<ExchangeInput> exchange = new ArrayList<>();
 

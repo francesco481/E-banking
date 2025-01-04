@@ -38,9 +38,9 @@ public final class SplitPayment implements Order {
         double amount = command.getAmount() / command.getAccounts().size();
 
         for (String iban : command.getAccounts()) {
-            Pair find = database.findBigIBAN(iban);
-            int first = (int) find.getFirst();
-            int second = (int) find.getSecond();
+            Pair<Integer, Integer> find = database.findBigIBAN(iban);
+            int first = find.getFirst();
+            int second = find.getSecond();
 
             if (first != -1) {
                 userPay.add(database.getUsers().get(first));

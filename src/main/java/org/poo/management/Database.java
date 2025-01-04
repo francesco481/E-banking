@@ -9,7 +9,6 @@ import org.poo.management.Accounts.Account;
 import org.poo.management.Accounts.AccountFactory;
 import org.poo.management.Accounts.AccountType;
 import org.poo.management.Cards.Card;
-import org.poo.management.Cards.CardType;
 import org.poo.utils.Pair;
 
 import java.util.ArrayList;
@@ -292,8 +291,8 @@ public final class Database {
         int st = 0;
         for (AccountType account : accountTypes) {
             Account curr = (Account) account;
-            for (CardType card : curr.getCards()) {
-                if (((Card) card).getCardNumber().equals(cardNumber)) {
+            for (Card card : curr.getCards()) {
+                if (card.getCardNumber().equals(cardNumber)) {
                     curr.getCards().remove(card);
                     return st;
                 }

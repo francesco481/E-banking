@@ -54,7 +54,7 @@ public final class PrintUsers implements Order {
                 ArrayNode cards = mapper.createArrayNode();
                 for (int k = 0; k < curr.getCards().size(); k++) {
                     ObjectNode cardNode = mapper.createObjectNode();
-                    Card card = (Card) curr.getCards().get(k);
+                    Card card = curr.getCards().get(k);
                     cardNode.put("cardNumber", card.getCardNumber());
                     cardNode.put("status", card.getStatus());
 

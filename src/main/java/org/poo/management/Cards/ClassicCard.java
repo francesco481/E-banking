@@ -1,8 +1,8 @@
 package org.poo.management.Cards;
 
-public class ClassicCard extends Card implements CardType {
-    @Override
-    public void pay() {
-
+public final class ClassicCard extends Card {
+    public ClassicCard() {
+        super();
+        this.setPaymentStrategy(new ClassicPayment());
     }
 }

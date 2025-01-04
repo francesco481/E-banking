@@ -1,5 +1,10 @@
 package org.poo.management;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public final class Alias {
     private final String email;
     private final String name;

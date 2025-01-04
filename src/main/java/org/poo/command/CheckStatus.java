@@ -8,7 +8,6 @@ import org.poo.fileio.UserInput;
 import org.poo.management.Accounts.Account;
 import org.poo.management.Accounts.AccountType;
 import org.poo.management.Cards.Card;
-import org.poo.management.Cards.CardType;
 import org.poo.management.Database;
 import org.poo.management.Transactions;
 
@@ -50,13 +49,12 @@ public final class CheckStatus implements Order {
         for (ArrayList<AccountType> accounts : database.getAccounts()) {
             for (AccountType account : accounts) {
                 Account currAcc = (Account) account;
-                for (CardType card : currAcc.getCards()) {
-                    Card curr = (Card) card;
-                    if (curr.getCardNumber().equals(command.getCardNumber())) {
+                for (Card card : currAcc.getCards()) {
+                    if (card.getCardNumber().equals(command.getCardNumber())) {
                         ok = 0;
-                        if (curr.getStatus().equals("active")) {
+                        if (card.getStatus().equals("active")) {
                             if (currAcc.getBalance() <= currAcc.getMinimum()) {
-                                curr.setStatus("frozen");
+                                card.setStatus("frozen");
                                 UserInput user = database.getUsers().get(st);
                                 user.addTransaction(transactions);
                                 currAcc.addTransaction(transactions);
