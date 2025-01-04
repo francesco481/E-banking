@@ -25,7 +25,6 @@ import org.poo.command.SplitPayment;
 import org.poo.fileio.CommandInput;
 import org.poo.fileio.ObjectInput;
 import org.poo.management.Database;
-import org.poo.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,13 +59,14 @@ public final class Main {
             File resultFile = new File(String.valueOf(path));
             for (File file : Objects.requireNonNull(resultFile.listFiles())) {
                 boolean delete = file.delete();
+
                 if (!delete) {
-                    System.out.println("Failed to delete " + file);
+                    System.out.println("Delete failed");
                 }
             }
-            boolean rez = resultFile.delete();
-            if (!rez) {
-                return;
+            boolean delete = resultFile.delete();
+            if (!delete) {
+                System.out.println("Delete failed");
             }
         }
         Files.createDirectories(path);
@@ -82,7 +82,6 @@ public final class Main {
             if (isCreated) {
                 action(file.getName(), filepath);
             }
-            Utils.resetRandom();
         }
 
         Checker.calculateScore();
@@ -114,7 +113,7 @@ public final class Main {
                 }
                 case "printTransactions" -> {
                     PrintTransactions printTransactions = new PrintTransactions(db, objectMapper,
-                                                                               output, commands);
+                            output, commands);
                     printTransactions.execute(commands.getTimestamp());
                 }
                 case "addAccount" -> {
@@ -131,7 +130,7 @@ public final class Main {
                 }
                 case "deleteAccount" -> {
                     DeleteAccount deleteAccount = new DeleteAccount(db, commands,
-                                                            objectMapper, output);
+                            objectMapper, output);
                     deleteAccount.execute(commands.getTimestamp());
                 }
                 case "deleteCard" -> {
@@ -168,7 +167,7 @@ public final class Main {
                 }
                 case "changeInterestRate" -> {
                     ChangeInterest changeInterest = new ChangeInterest(db, commands,
-                                                                       objectMapper, output);
+                            objectMapper, output);
                     changeInterest.execute(commands.getTimestamp());
                 }
                 case "report" -> {
@@ -177,10 +176,12 @@ public final class Main {
                 }
                 case "spendingsReport" -> {
                     ReportSpending reportSpending = new ReportSpending(db, commands,
-                                                                       objectMapper, output);
+                            objectMapper, output);
                     reportSpending.execute(commands.getTimestamp());
                 }
-                default -> throw new IllegalStateException("Unexpected value: " + currCommand);
+                default -> {
+                    break;
+                }
             }
         }
 
@@ -197,8 +198,9 @@ public final class Main {
      * @return the extracted numbers
      */
     public static int fileConsumer(final File file) {
-        String fileName = file.getName()
-                .replaceAll(CheckerConstants.DIGIT_REGEX, CheckerConstants.EMPTY_STR);
-        return Integer.parseInt(fileName.substring(0, 2));
+        return Integer.parseInt(
+                file.getName()
+                        .replaceAll(CheckerConstants.DIGIT_REGEX, CheckerConstants.EMPTY_STR)
+        );
     }
 }
