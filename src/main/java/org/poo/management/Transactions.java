@@ -22,6 +22,7 @@ public final class Transactions {
     private String commerciant = null;
     private String error = null;
     private List<String> accounts = new ArrayList<>();
+    private String newPlan = null;
 
     public Transactions() {
 
@@ -78,5 +79,28 @@ public final class Transactions {
     public Transactions(final String description, final int timestamp) {
         this.description = description;
         this.timestamp = timestamp;
+    }
+
+    public Transactions(final String description, final int timestamp,
+                        final String iban, final String newPlan) {
+        this.description = description;
+        this.timestamp = timestamp;
+        this.iban = iban;
+        this.newPlan = newPlan;
+    }
+
+    public Transactions(final String description, final int timestamp,
+                        final double amount, final String currency) {
+        this.description = description;
+        this.timestamp = timestamp;
+        this.amount = amount;
+        this.currency = currency;
+    }
+
+    public Transactions(final String description, final int timestamp,
+                        final double amount) {
+        this.description = description;
+        this.timestamp = timestamp;
+        this.amount = amount;
     }
 }

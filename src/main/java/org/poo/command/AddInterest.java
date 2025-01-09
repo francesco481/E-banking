@@ -8,6 +8,7 @@ import org.poo.fileio.UserInput;
 import org.poo.management.Accounts.Account;
 import org.poo.management.Accounts.AccountType;
 import org.poo.management.Database;
+import org.poo.management.Transactions;
 
 public final class AddInterest implements Order {
     private final Database database;
@@ -40,8 +41,11 @@ public final class AddInterest implements Order {
             for (AccountType account : database.getAccounts().get(i)) {
                 if (((Account) account).getIban().equals(command.getAccount())) {
                     if (((Account) account).getInterest() != -1) {
-                        ((Account) account).setBalance((command.getInterestRate() + 1)
-                                                        * account.getBalance());
+                        double amount = ((Account) account).getInterest() * account.getBalance();
+                        ((Account) account).addFunds(amount);
+
+                        ((Account) account).addTransaction(new Transactions("Interest rate income", command.getTimestamp(), amount, ((Account) account).getCurrency()));
+                        ignored.addTransaction(new Transactions("Interest rate income", command.getTimestamp(), amount, ((Account) account).getCurrency()));
                     } else {
                         ObjectNode outputNode = mapper.createObjectNode();
                         outputNode.put("command", "addInterest");

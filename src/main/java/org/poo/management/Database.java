@@ -3,6 +3,7 @@ package org.poo.management;
 import lombok.Getter;
 import lombok.Setter;
 import org.poo.fileio.CommandInput;
+import org.poo.fileio.CommerciantInput;
 import org.poo.fileio.ExchangeInput;
 import org.poo.fileio.UserInput;
 import org.poo.management.Accounts.Account;
@@ -29,6 +30,7 @@ public final class Database {
     private ArrayList<UserInput> users = new ArrayList<>();
     private ArrayList<ArrayList<AccountType>> accounts = new ArrayList<>();
     private ArrayList<Alias> aliases = new ArrayList<>();
+    private ArrayList<CommerciantInput> commerciants= new ArrayList<>();
     @Getter
     private static ArrayList<ExchangeInput> exchange = new ArrayList<>();
 
@@ -49,10 +51,19 @@ public final class Database {
      * @param userInputs an array of `UserInput` objects representing the users to be added.
      */
     public void addUsers(final UserInput[] userInputs) {
-        for (int i = 0; i < userInputs.length; i++) {
-            this.users.add(userInputs[i]);
+        for (UserInput userInput : userInputs) {
+            if (userInput.getOccupation().equals("student")) {
+                userInput.setPlan("student");
+            } else {
+                userInput.setPlan("standard");
+            }
+            this.users.add(userInput);
             this.accounts.add(new ArrayList<>());
         }
+    }
+
+    public void addCommerciants(final CommerciantInput[] commerciantInputs) {
+        this.commerciants.addAll(Arrays.asList(commerciantInputs));
     }
 
     /**
@@ -244,6 +255,7 @@ public final class Database {
             int i = findIBAN(accountTypes, command.getAccount());
             if (i != -1) {
                 ((Account) accountTypes.get(i)).addFunds(command.getAmount());
+                break;
             }
         }
     }
@@ -347,5 +359,6 @@ public final class Database {
         users.clear();
         accounts.clear();
         exchange.clear();
+        commerciants.clear();
     }
 }

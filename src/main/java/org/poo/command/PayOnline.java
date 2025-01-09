@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.poo.fileio.CommandInput;
+import org.poo.fileio.CommerciantInput;
 import org.poo.fileio.UserInput;
 import org.poo.management.Accounts.Account;
 import org.poo.management.Accounts.AccountType;
@@ -47,6 +48,10 @@ public final class PayOnline implements Order {
             return;
         }
 
+        if (command.getAmount() == 0) {
+            return;
+        }
+
         ArrayList<AccountType> curr = database.getAccounts().get(i);
         int ok = 1;
         for (AccountType account : curr) {
@@ -63,12 +68,94 @@ public final class PayOnline implements Order {
                     }
                     double amount = command.getAmount() * Database.getRate(command.getCurrency(),
                                                             ((Account) account).getCurrency());
-                    if (account.getBalance() - ((Account) account).getMinimum() >= amount
+                    double ronAmount = command.getAmount() * Database.getRate(command.getCurrency(), "RON");
+
+                    double comision = 1;
+
+                    UserInput user = database.getUsers().get(i);
+                    if (user.getPlan().equals("standard")) {
+                        comision = 1.002;
+                    }
+
+                    if (user.getPlan().equals("silver")  &&  ronAmount >= 500) {
+                        comision = 1.001;
+                    }
+
+                    if (account.getBalance() - ((Account) account).getMinimum() >= amount*comision
                             && card.getStatus().equals("active")) {
-                        account.pay(amount);
+
+                        account.pay(amount*comision);
                         card.execPay();
 
-                        UserInput user = database.getUsers().get(i);
+                        String commerciant = command.getCommerciant();
+
+                        for (CommerciantInput commerciantInput : database.getCommerciants()) {
+                            if (commerciantInput.getCommerciant().equals(commerciant)) {
+
+                                String type = commerciantInput.getType();
+                                if (commerciantInput.getCashbackStrategy().equals("nrOfTransactions")) {
+                                    ((Account) account).setNr(((Account) account).getNr() + 1);
+                                }
+
+                                int nr = ((Account) account).getNr();
+                                if (type.equals("Food")  &&  nr > 2  && !((Account) account).isFood()) {
+                                    ((Account) account).addFunds(amount * 0.02);
+                                    ((Account) account).setFood(true);
+                                }
+
+                                if (type.equals("Clothes")  &&  nr > 5  && !((Account) account).isClothes()) {
+                                    ((Account) account).addFunds(amount * 0.05);
+                                    ((Account) account).setClothes(true);
+                                }
+
+                                if (type.equals("Tech")  &&  nr > 10  && !((Account) account).isTech()) {
+                                    ((Account) account).addFunds(amount * 0.1);
+                                    ((Account) account).setTech(true);
+                                }
+
+                                if (commerciantInput.getCashbackStrategy().equals("spendingThreshold")) {
+                                    ((Account) account).setTotal(((Account) account).getTotal() + ronAmount);
+
+                                    if (((Account) account).getTotal() >= 500) {
+                                        if (user.getPlan().equals("standard") || user.getPlan().equals("student")) {
+                                            ((Account) account).addFunds(amount * 0.0025);
+                                        } else if (user.getPlan().equals("silver")) {
+                                            ((Account) account).addFunds(amount * 0.005);
+                                        } else {
+                                            ((Account) account).addFunds(amount * 0.007);
+                                        }
+                                    } else if (((Account) account).getTotal() >= 300) {
+                                        if (user.getPlan().equals("standard") || user.getPlan().equals("student")) {
+                                            ((Account) account).addFunds(amount * 0.002);
+                                        } else if (user.getPlan().equals("silver")) {
+                                            ((Account) account).addFunds(amount * 0.004);
+                                        } else {
+                                            ((Account) account).addFunds(amount * 0.0055);
+                                        }
+                                    } else if (((Account) account).getTotal() >= 100) {
+                                        if (user.getPlan().equals("standard") || user.getPlan().equals("student")) {
+                                            ((Account) account).addFunds(amount * 0.001);
+                                        } else if (user.getPlan().equals("silver")) {
+                                            ((Account) account).addFunds(amount * 0.003);
+                                        } else {
+                                            ((Account) account).addFunds(amount * 0.005);
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+
+                        if (user.getPlan().equals("silver")  &&  ronAmount >= 300) {
+                            user.increaseGold();
+
+                            if (user.getGold() >= 5) {
+                                user.setPlan("gold");
+                            }
+                        }
+
+                        System.out.println(account.getBalance());
+
                         ok = 2;
                         Transactions transactions  = new Transactions("Card payment",
                                             timestamp, command.getCommerciant(), amount);
@@ -89,12 +176,14 @@ public final class PayOnline implements Order {
                                     ((Account) account).getIban());
 
                             ((Account) account).addTransaction(transactions2);
+                            ((Account) account).addUsed(command.getCardNumber());
                             user.addTransaction(transactions2);
                         }
+                        return;
                     }
-                    if (account.getBalance() - ((Account) account).getMinimum() < amount
+
+                    if (account.getBalance() - ((Account) account).getMinimum() < amount*comision
                             && card.getStatus().equals("active")) {
-                        UserInput user = database.getUsers().get(i);
                         Transactions transactions = new Transactions("Insufficient funds",
                                                                     timestamp);
 

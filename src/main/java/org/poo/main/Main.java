@@ -5,26 +5,11 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.poo.checker.Checker;
 import org.poo.checker.CheckerConstants;
-import org.poo.command.Report;
-import org.poo.command.AddFunds;
-import org.poo.command.AddInterest;
-import org.poo.command.AddAccount;
-import org.poo.command.ChangeInterest;
-import org.poo.command.CheckStatus;
-import org.poo.command.CreateCard;
-import org.poo.command.DeleteAccount;
-import org.poo.command.DeleteCard;
-import org.poo.command.PayOnline;
-import org.poo.command.PrintTransactions;
-import org.poo.command.PrintUsers;
-import org.poo.command.ReportSpending;
-import org.poo.command.SendMoney;
-import org.poo.command.SetAlias;
-import org.poo.command.SetMinimum;
-import org.poo.command.SplitPayment;
+import org.poo.command.*;
 import org.poo.fileio.CommandInput;
 import org.poo.fileio.ObjectInput;
 import org.poo.management.Database;
+import org.poo.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -103,6 +88,7 @@ public final class Main {
 
         db.addUsers(inputData.getUsers());
         db.addExchanges(inputData.getExchangeRates());
+        db.addCommerciants(inputData.getCommerciants());
 
         for (CommandInput commands : inputData.getCommands())  {
             String currCommand = commands.getCommand();
@@ -142,7 +128,7 @@ public final class Main {
                     payOnline.execute(commands.getTimestamp());
                 }
                 case "sendMoney" -> {
-                    SendMoney sendMoney = new SendMoney(db, commands);
+                    SendMoney sendMoney = new SendMoney(db, commands, output);
                     sendMoney.execute(commands.getTimestamp());
                 }
                 case "checkCardStatus" -> {
@@ -179,13 +165,23 @@ public final class Main {
                             objectMapper, output);
                     reportSpending.execute(commands.getTimestamp());
                 }
-                default -> {
-                    break;
+                case "withdrawSavings" -> {
+                    WithDraw withDraw = new WithDraw(commands, db, output);
+                    withDraw.execute(commands.getTimestamp());
+                }
+                case "upgradePlan" -> {
+                    UpgradePlan upgradePlan = new UpgradePlan(db, commands, output);
+                    upgradePlan.execute(commands.getTimestamp());
+                }
+                case "cashWithdrawal" -> {
+                    CashDraw cashDraw = new CashDraw(db, commands, output);
+                    cashDraw.execute(commands.getTimestamp());
                 }
             }
         }
 
         db.clear();
+        Utils.resetRandom();
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);
@@ -198,9 +194,9 @@ public final class Main {
      * @return the extracted numbers
      */
     public static int fileConsumer(final File file) {
-        return Integer.parseInt(
-                file.getName()
-                        .replaceAll(CheckerConstants.DIGIT_REGEX, CheckerConstants.EMPTY_STR)
-        );
+        String fileName = file.getName()
+                .replaceAll(CheckerConstants.DIGIT_REGEX,
+                        CheckerConstants.EMPTY_STR);
+        return Integer.parseInt(fileName.substring(0, 2));
     }
 }

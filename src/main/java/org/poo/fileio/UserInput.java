@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import org.poo.management.Transactions;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @Data
 @NoArgsConstructor
@@ -14,7 +15,10 @@ public final class UserInput {
     private String email;
     private String birthDate;
     private String occupation;
+    private String plan;
+    private int gold = 0;
     private ArrayList<Transactions> transactions = new ArrayList<>();
+    private HashMap<String, Integer> comerciants = new HashMap<>();
 
     /**
      * Adds a transaction to the list of transactions for this account.
@@ -25,5 +29,9 @@ public final class UserInput {
      */
     public void addTransaction(final Transactions transaction) {
         this.transactions.add(transaction);
+    }
+
+    public void increaseGold() {
+        this.gold += 1;
     }
 }

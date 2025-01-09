@@ -18,8 +18,15 @@ public class Account {
     private String currency;
     private String type;
     private double minimum = 0;
+    private double total = 0;
+    private int nr = 0;
+    private boolean food = false;
+    private boolean tech = false;
+    private boolean clothes = false;
     private ArrayList<Card> cards = new ArrayList<>();
     private ArrayList<Transactions> transactions = new ArrayList<>();
+    private ArrayList<String> used = new ArrayList<>();
+
     private double interest = -1;
 
     public Account(final CommandInput command) {
@@ -46,6 +53,10 @@ public class Account {
             card = new OneCard();
         }
         cards.add(card);
+    }
+
+    public void addUsed(final String number) {
+        used.add(number);
     }
 
     /**

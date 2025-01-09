@@ -14,7 +14,6 @@ public final class Utils {
     private static final String RO_STR = "RO";
     private static final String POO_STR = "POOB";
 
-
     private static Random ibanRandom = new Random(IBAN_SEED);
     private static Random cardRandom = new Random(CARD_SEED);
 
@@ -57,5 +56,25 @@ public final class Utils {
     public static void resetRandom() {
         ibanRandom = new Random(IBAN_SEED);
         cardRandom = new Random(CARD_SEED);
+    }
+
+    public static boolean isUp(String a, String b) {
+        if (a.equals("standard") || a.equals("student")) {
+            return true;
+        }
+
+        return a.equals("silver") && b.equals("gold");
+    }
+
+    public static double getAmount(String a, String b) {
+        if (a.equals("standard") || a.equals("student")) {
+            if (b.equals("silver")) {
+                return 100;
+            }
+
+            return 350;
+        }
+
+        return 250;
     }
 }

@@ -119,6 +119,7 @@ public final class CAccount extends Account implements AccountType {
 
         ObjectNode reportDetails = mapper.createObjectNode();
         reportDetails.put("IBAN", super.getIban());
+        System.out.println(super.getBalance() + " " + timestamp);
         reportDetails.put("balance", super.getBalance());
         reportDetails.put("currency", super.getCurrency());
         reportDetails.set("transactions", transactionsArray);

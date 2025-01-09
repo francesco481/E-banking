@@ -25,7 +25,7 @@ public final class ShowTransaction {
         transactionNode.put("timestamp", transaction.getTimestamp());
         transactionNode.put("description", transaction.getDescription());
 
-        if (!transaction.getAccounts().isEmpty()) {
+        if (!transaction.getAccounts().isEmpty()  ||  transaction.getDescription().equals("Interest rate income")) {
             transactionNode.put("currency", transaction.getCurrency());
         }
         if (transaction.getAmount() != -1) {
@@ -41,7 +41,7 @@ public final class ShowTransaction {
         if (transaction.getReceiverIBAN() != null) {
             transactionNode.put("receiverIBAN", transaction.getReceiverIBAN());
         }
-        if (transaction.getAmount() != -1 && transaction.getCurrency() != null
+        if (!transaction.getDescription().equals("Interest rate income")  && transaction.getAmount() != -1 && transaction.getCurrency() != null
                 &&  transaction.getAccounts().isEmpty()) {
             transactionNode.put("amount", transaction.getAmount() + " "
                     + transaction.getCurrency());
@@ -57,7 +57,14 @@ public final class ShowTransaction {
         if (transaction.getCardHolder() != null) {
             transactionNode.put("cardHolder", transaction.getCardHolder());
         }
-        if (transaction.getIban() != null) {
+
+
+        if (transaction.getNewPlan() != null) {
+            transactionNode.put("accountIBAN", transaction.getIban());
+            transactionNode.put("newPlanType", transaction.getNewPlan());
+        }
+
+        if (transaction.getIban() != null  &&  transaction.getNewPlan() == null) {
             transactionNode.put("account", transaction.getIban());
         }
 

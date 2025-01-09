@@ -1,0 +1,59 @@
+commit e977d01768f27ceaf9816391c051b11595a1657d
+Author: francesco481 <francescomartinut18@gmail.com>
+Date:   Sat Jan 4 12:20:31 2025 +0200
+
+    start phase 2
+
+commit 154f4ca72799a86574dde6aa16256193818aa573
+Author: francesco481 <francescomartinut18@gmail.com>
+Date:   Sat Jan 4 11:53:31 2025 +0200
+
+    strategy pattern
+
+commit ece1756b271c0cfc101a6ab17aecb74d2e88b254
+Author: francesco481 <francescomartinut18@gmail.com>
+Date:   Sat Dec 14 18:21:15 2024 +0200
+
+    added README
+
+commit fc703bafcc5c428bc03286ffac06112965c5fca9
+Author: francesco481 <francescomartinut18@gmail.com>
+Date:   Wed Dec 11 09:31:39 2024 +0200
+
+    fixed coding style
+
+commit a29563464893c6f6fd7ad6277d48af40a1797648
+Author: francesco481 <francescomartinut18@gmail.com>
+Date:   Tue Dec 10 15:40:57 2024 +0200
+
+    fixed bugs
+
+commit 93cee887f73b8c9b2e5f7d89e5058e355c3ede5b
+Author: francesco481 <francescomartinut18@gmail.com>
+Date:   Sun Dec 8 19:04:20 2024 +0200
+
+    beofre alias
+
+commit f7877e446ec3e3b7c73c0c9485b313554b2563a2
+Author: francesco481 <francescomartinut18@gmail.com>
+Date:   Sun Dec 8 14:24:56 2024 +0200
+
+    before transactions
+
+commit 05f11735795b2c8de79db8f2fd6adeb8ed0a2c3f
+Author: Martinut Francesco <francescomartinut18@gmail.com>
+Date:   Sat Dec 7 21:21:06 2024 +0200
+
+    first tests
+
+commit 2d6d1219ca1a5088b533ffd4f197512074999b4f
+Author: Martinut Francesco <francescomartinut18@gmail.com>
+Date:   Thu Dec 5 11:04:48 2024 +0200
+
+    start
+
+commit 3095197e03bbe0dbbc99b4ab190d062e772f210d
+Author: Martinut Francesco <francescomartinut18@gmail.com>
+Date:   Thu Dec 5 10:32:11 2024 +0200
+
+    start
