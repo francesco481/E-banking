@@ -59,7 +59,7 @@ public final class Utils {
     }
 
     public static boolean isUp(String a, String b) {
-        if (a.equals("standard") || a.equals("student")) {
+        if ((a.equals("standard") || a.equals("student"))  &&  !b.equals("standard")  &&  !b.equals("student")) {
             return true;
         }
 

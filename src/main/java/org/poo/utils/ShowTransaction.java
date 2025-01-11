@@ -25,6 +25,9 @@ public final class ShowTransaction {
         transactionNode.put("timestamp", transaction.getTimestamp());
         transactionNode.put("description", transaction.getDescription());
 
+        if (transaction.getSplit() != null) {
+            transactionNode.put("splitPaymentType", transaction.getSplit());
+        }
         if (!transaction.getAccounts().isEmpty()  ||  transaction.getDescription().equals("Interest rate income")) {
             transactionNode.put("currency", transaction.getCurrency());
         }
@@ -37,6 +40,12 @@ public final class ShowTransaction {
 
         if (transaction.getSenderIBAN() != null) {
             transactionNode.put("senderIBAN", transaction.getSenderIBAN());
+        }
+        if (transaction.getClassicIban() != null) {
+            transactionNode.put("classicAccountIBAN", transaction.getClassicIban());
+        }
+        if (transaction.getSavingsIban() != null) {
+            transactionNode.put("savingsAccountIBAN", transaction.getSavingsIban());
         }
         if (transaction.getReceiverIBAN() != null) {
             transactionNode.put("receiverIBAN", transaction.getReceiverIBAN());
@@ -68,16 +77,48 @@ public final class ShowTransaction {
             transactionNode.put("account", transaction.getIban());
         }
 
-        if (!transaction.getAccounts().isEmpty()  &&  transaction.getError() != null) {
+        if (!transaction.getAccounts().isEmpty() && !transaction.getAmounts().isEmpty()  &&  transaction.getError() != null) {
             ArrayNode involvedAccounts = mapper.createArrayNode();
             for (String account : transaction.getAccounts()) {
                 involvedAccounts.add(account);
             }
             transactionNode.set("involvedAccounts", involvedAccounts);
+
+            ArrayNode amountForUsers = mapper.createArrayNode();
+            for (Double amount : transaction.getAmounts()) {
+                amountForUsers.add(amount);
+            }
+            transactionNode.set("amountForUsers", amountForUsers);
+
             transactionNode.put("error", transaction.getError());
         }
 
-        if (!transaction.getAccounts().isEmpty()  &&  transaction.getError() == null) {
+        if (!transaction.getAccounts().isEmpty()  &&  !transaction.getAmounts().isEmpty()  &&  transaction.getError() == null) {
+            ArrayNode involvedAccounts = mapper.createArrayNode();
+            for (String account : transaction.getAccounts()) {
+                involvedAccounts.add(account);
+            }
+            transactionNode.set("involvedAccounts", involvedAccounts);
+
+
+            ArrayNode amountForUsers = mapper.createArrayNode();
+            for (Double amount : transaction.getAmounts()) {
+                amountForUsers.add(amount);
+            }
+            transactionNode.set("amountForUsers", amountForUsers);
+        }
+
+        if (!transaction.getAccounts().isEmpty() && transaction.getAmounts().isEmpty()  &&  transaction.getError() != null) {
+            ArrayNode involvedAccounts = mapper.createArrayNode();
+            for (String account : transaction.getAccounts()) {
+                involvedAccounts.add(account);
+            }
+            transactionNode.set("involvedAccounts", involvedAccounts);
+
+            transactionNode.put("error", transaction.getError());
+        }
+
+        if (!transaction.getAccounts().isEmpty()  &&  transaction.getAmounts().isEmpty()  &&  transaction.getError() == null) {
             ArrayNode involvedAccounts = mapper.createArrayNode();
             for (String account : transaction.getAccounts()) {
                 involvedAccounts.add(account);

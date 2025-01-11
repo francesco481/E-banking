@@ -6,10 +6,10 @@ import org.poo.fileio.CommandInput;
 import org.poo.fileio.CommerciantInput;
 import org.poo.fileio.ExchangeInput;
 import org.poo.fileio.UserInput;
-import org.poo.management.Accounts.Account;
-import org.poo.management.Accounts.AccountFactory;
-import org.poo.management.Accounts.AccountType;
-import org.poo.management.Cards.Card;
+import org.poo.management.accounts.Account;
+import org.poo.management.accounts.AccountFactory;
+import org.poo.management.accounts.AccountType;
+import org.poo.management.cards.Card;
 import org.poo.utils.Pair;
 
 import java.util.ArrayList;
@@ -31,6 +31,7 @@ public final class Database {
     private ArrayList<ArrayList<AccountType>> accounts = new ArrayList<>();
     private ArrayList<Alias> aliases = new ArrayList<>();
     private ArrayList<CommerciantInput> commerciants= new ArrayList<>();
+    private ArrayList<CommandInput> commands= new ArrayList<>();
     @Getter
     private static ArrayList<ExchangeInput> exchange = new ArrayList<>();
 
@@ -64,6 +65,10 @@ public final class Database {
 
     public void addCommerciants(final CommerciantInput[] commerciantInputs) {
         this.commerciants.addAll(Arrays.asList(commerciantInputs));
+    }
+
+    public void addCommands(final CommandInput[] commandInputs) {
+        this.commands.addAll(Arrays.asList(commandInputs));
     }
 
     /**
@@ -360,5 +365,6 @@ public final class Database {
         accounts.clear();
         exchange.clear();
         commerciants.clear();
+        commands.clear();
     }
 }

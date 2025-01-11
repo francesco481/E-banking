@@ -1,4 +1,4 @@
-package org.poo.management.Cards;
+package org.poo.management.cards;
 
 import org.poo.utils.Utils;
 

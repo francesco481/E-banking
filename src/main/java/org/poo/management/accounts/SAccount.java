@@ -1,4 +1,4 @@
-package org.poo.management.Accounts;
+package org.poo.management.accounts;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;

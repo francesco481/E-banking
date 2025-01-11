@@ -5,8 +5,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.poo.fileio.CommandInput;
 import org.poo.fileio.UserInput;
-import org.poo.management.Accounts.Account;
-import org.poo.management.Accounts.AccountType;
+import org.poo.management.accounts.Account;
+import org.poo.management.accounts.AccountType;
 import org.poo.management.Alias;
 import org.poo.management.Database;
 import org.poo.management.Transactions;
@@ -123,14 +123,6 @@ public final class SendMoney implements Order {
 
         sender.pay(command.getAmount() * comision);
 
-        if (user1.getPlan().equals("silver")  &&  ronAmount >= 300) {
-            user1.increaseGold();
-
-            if (user1.getGold() >= 5) {
-                user1.setPlan("gold");
-            }
-        }
-
         double amount  = command.getAmount() * Database.getRate(((Account) sender).getCurrency(),
                                                              ((Account) receiver).getCurrency());
         ((Account) receiver).addFunds(amount);
@@ -147,5 +139,17 @@ public final class SendMoney implements Order {
 
         user2.addTransaction(transactions);
         ((Account) receiver).addTransaction(transactions);
+
+
+        if (user1.getPlan().equals("silver")  &&  ronAmount >= 300) {
+            user1.increaseGold();
+
+            if (user1.getGold() >= 5) {
+                user1.setPlan("gold");
+                String iban = ((Account) sender).getIban();
+                user1.addTransaction(new Transactions("Upgrade plan", command.getTimestamp(), iban, "gold"));
+                ((Account) sender).addTransaction(new Transactions("Upgrade plan", command.getTimestamp(), iban, "gold"));
+            }
+        }
     }
 }

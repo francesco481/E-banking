@@ -1,4 +1,4 @@
-package org.poo.management.Cards;
+package org.poo.management.cards;
 
 public final class ClassicCard extends Card {
     public ClassicCard() {

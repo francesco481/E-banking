@@ -89,8 +89,10 @@ public final class Main {
         db.addUsers(inputData.getUsers());
         db.addExchanges(inputData.getExchangeRates());
         db.addCommerciants(inputData.getCommerciants());
+        db.addCommands(inputData.getCommands());
 
-        for (CommandInput commands : inputData.getCommands())  {
+        for (int idx = 0 ; idx < db.getCommands().size() ; idx++)  {
+            CommandInput commands = db.getCommands().get(idx);
             String currCommand = commands.getCommand();
             switch (currCommand) {
                 case "printUsers" -> {
@@ -144,7 +146,7 @@ public final class Main {
                     setAlias.execute(commands.getTimestamp());
                 }
                 case "splitPayment" -> {
-                    SplitPayment splitPayment = new SplitPayment(db, commands);
+                    SplitPayment splitPayment = new SplitPayment(db, commands, db.getCommands(), idx+1, output);
                     splitPayment.execute(commands.getTimestamp());
                 }
                 case "addInterest" -> {
@@ -176,6 +178,10 @@ public final class Main {
                 case "cashWithdrawal" -> {
                     CashDraw cashDraw = new CashDraw(db, commands, output);
                     cashDraw.execute(commands.getTimestamp());
+                }
+                case "rejectSplitPayment", "acceptSplitPayment" -> {
+                    NoSplit noSplit = new NoSplit(commands, output);
+                    noSplit.execute(commands.getTimestamp());
                 }
             }
         }

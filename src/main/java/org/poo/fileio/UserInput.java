@@ -18,7 +18,7 @@ public final class UserInput {
     private String plan;
     private int gold = 0;
     private ArrayList<Transactions> transactions = new ArrayList<>();
-    private HashMap<String, Integer> comerciants = new HashMap<>();
+    private HashMap<String, Integer> number = new HashMap<>();
 
     /**
      * Adds a transaction to the list of transactions for this account.
@@ -28,7 +28,18 @@ public final class UserInput {
      * @param transaction the transaction to be added to the account.
      */
     public void addTransaction(final Transactions transaction) {
-        this.transactions.add(transaction);
+        if (this.transactions.isEmpty() ||  transaction.getTimestamp() >= this.transactions.getLast().getTimestamp()) {
+            this.transactions.addLast(transaction);
+        } else {
+            int position = 0;
+            for (int i = 0; i < this.transactions.size(); i++) {
+                if (this.transactions.get(i).getTimestamp() > transaction.getTimestamp()) {
+                    position = i;
+                    break;
+                }
+            }
+            this.transactions.add(position, transaction);
+        }
     }
 
     public void increaseGold() {

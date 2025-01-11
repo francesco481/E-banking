@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.poo.fileio.CommandInput;
-import org.poo.management.Accounts.Account;
-import org.poo.management.Accounts.AccountType;
+import org.poo.management.accounts.Account;
+import org.poo.management.accounts.AccountType;
 import org.poo.management.Database;
 
 public final class Report implements Order {

@@ -3,8 +3,8 @@ package org.poo.command;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.poo.management.Accounts.Account;
-import org.poo.management.Cards.Card;
+import org.poo.management.accounts.Account;
+import org.poo.management.cards.Card;
 import org.poo.management.Database;
 
 public final class PrintUsers implements Order {

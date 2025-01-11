@@ -22,7 +22,11 @@ public final class Transactions {
     private String commerciant = null;
     private String error = null;
     private List<String> accounts = new ArrayList<>();
+    private List<Double> amounts = new ArrayList<>();
     private String newPlan = null;
+    private String split;
+    private String classicIban = null;
+    private String savingsIban = null;
 
     public Transactions() {
 
@@ -41,23 +45,50 @@ public final class Transactions {
     }
 
     public Transactions(final String description, final int timestamp, final String currency,
-                        final double amount, final List<String> accounts, final String error) {
+                        final double amount, final List<String> accounts, final String error,
+                        final List<Double> amounts, final String split) {
         this.timestamp = timestamp;
         this.description = description;
         this.currency = currency;
         this.amount = amount;
         this.accounts = accounts;
         this.error = error;
+        this.amounts = amounts;
+        this.split = split;
     }
 
     public Transactions(final String description, final int timestamp, final String currency,
-                        final double amount, final List<String> accounts) {
+                        final double amount, final List<String> accounts, final List<Double> amounts, final String split) {
         this.timestamp = timestamp;
         this.description = description;
         this.currency = currency;
         this.amount = amount;
         this.accounts = accounts;
+        this.amounts = amounts;
+        this.split = split;
     }
+
+    public Transactions(final String description, final int timestamp, final String currency,
+                        final double amount, final List<String> accounts, final String error, final String split) {
+        this.timestamp = timestamp;
+        this.description = description;
+        this.currency = currency;
+        this.amount = amount;
+        this.accounts = accounts;
+        this.error = error;
+        this.split = split;
+    }
+
+    public Transactions(final String description, final int timestamp, final String currency,
+                        final double amount, final List<String> accounts, final String split) {
+        this.timestamp = timestamp;
+        this.description = description;
+        this.currency = currency;
+        this.amount = amount;
+        this.accounts = accounts;
+        this.split = split;
+    }
+
 
     public Transactions(final String description, final int timestamp, final String card,
                         final String cardHolder, final String iban) {
@@ -101,6 +132,16 @@ public final class Transactions {
                         final double amount) {
         this.description = description;
         this.timestamp = timestamp;
+        this.amount = amount;
+    }
+
+    public Transactions(final String description, final int timestamp,
+                        final String classicIban, final String savingsIban,
+                        final double amount) {
+        this.description = description;
+        this.timestamp = timestamp;
+        this.classicIban = classicIban;
+        this.savingsIban = savingsIban;
         this.amount = amount;
     }
 }

@@ -1,14 +1,15 @@
-package org.poo.management.Accounts;
+package org.poo.management.accounts;
 
 import lombok.Getter;
 import lombok.Setter;
 import org.poo.fileio.CommandInput;
-import org.poo.management.Cards.Card;
-import org.poo.management.Cards.ClassicCard;
-import org.poo.management.Cards.OneCard;
+import org.poo.management.cards.Card;
+import org.poo.management.cards.ClassicCard;
+import org.poo.management.cards.OneCard;
 import org.poo.management.Transactions;
 import org.poo.utils.Utils;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 @Getter
 @Setter
@@ -18,14 +19,16 @@ public class Account {
     private String currency;
     private String type;
     private double minimum = 0;
-    private double total = 0;
     private int nr = 0;
-    private boolean food = false;
-    private boolean tech = false;
-    private boolean clothes = false;
+    private double total = 0;
+    private int food = 0;
+    private int tech = 0;
+    private int clothes = 0;
     private ArrayList<Card> cards = new ArrayList<>();
     private ArrayList<Transactions> transactions = new ArrayList<>();
     private ArrayList<String> used = new ArrayList<>();
+    private HashMap<String, Double> spending = new HashMap<>();
+    private HashMap<String, Integer> number = new HashMap<>();
 
     private double interest = -1;
 
@@ -67,7 +70,18 @@ public class Account {
      * @param transaction the transaction to be added to the user.
      */
     public void addTransaction(final Transactions transaction) {
-        this.transactions.add(transaction);
+        if (this.transactions.isEmpty() ||  transaction.getTimestamp() >= this.transactions.getLast().getTimestamp()) {
+            this.transactions.addLast(transaction);
+        } else {
+            int position = 0;
+            for (int i = 0; i < this.transactions.size(); i++) {
+                if (this.transactions.get(i).getTimestamp() > transaction.getTimestamp()) {
+                    position = i;
+                    break;
+                }
+            }
+            this.transactions.add(position, transaction);
+        }
     }
 
     /**

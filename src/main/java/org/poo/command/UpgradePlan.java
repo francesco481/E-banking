@@ -1,10 +1,12 @@
 package org.poo.command;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.poo.fileio.CommandInput;
 import org.poo.fileio.UserInput;
-import org.poo.management.Accounts.Account;
-import org.poo.management.Accounts.AccountType;
+import org.poo.management.accounts.Account;
+import org.poo.management.accounts.AccountType;
 import org.poo.management.Database;
 import org.poo.management.Transactions;
 import org.poo.utils.Pair;
@@ -26,7 +28,18 @@ public class UpgradePlan implements Order {
         Pair< Integer, Integer > idx = database.findBigIBAN(command.getAccount());
 
         if (idx.getFirst() == -1) {
-            //account not found
+            ObjectMapper mapper = new ObjectMapper();
+            ObjectNode commandNode = mapper.createObjectNode();
+            commandNode.put("command", command.getCommand());
+
+            ObjectNode outputNode = mapper.createObjectNode();
+            outputNode.put("timestamp", command.getTimestamp());
+            outputNode.put("description", "Account not found");
+
+            commandNode.set("output", outputNode);
+            commandNode.put("timestamp", timestamp);
+
+            output.add(commandNode);
             return;
         }
 
@@ -44,9 +57,9 @@ public class UpgradePlan implements Order {
         }
 
         double amount = Utils.getAmount(user.getPlan(), command.getNewPlanType()) * Database.getRate("RON", ((Account) account).getCurrency());
-
         if (amount > account.getBalance()) {
-            //insf funds
+            user.addTransaction(new Transactions("Insufficient funds", command.getTimestamp()));
+            ((Account) account).addTransaction(new Transactions("Insufficient funds", command.getTimestamp()));
             return;
         }
 

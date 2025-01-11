@@ -1,4 +1,4 @@
-package org.poo.management.Cards;
+package org.poo.management.cards;
 
 import lombok.Getter;
 import lombok.Setter;

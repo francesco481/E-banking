@@ -1,8 +1,8 @@
 package org.poo.command;
 
 import org.poo.fileio.CommandInput;
-import org.poo.management.Accounts.Account;
-import org.poo.management.Accounts.AccountType;
+import org.poo.management.accounts.Account;
+import org.poo.management.accounts.AccountType;
 import org.poo.management.Alias;
 import org.poo.management.Database;
 

@@ -1,4 +1,4 @@
-package org.poo.management.Accounts;
+package org.poo.management.accounts;
 
 import org.poo.fileio.CommandInput;
 

@@ -27,6 +27,7 @@ public final class CommandInput {
     private int timestamp;
     private int startTimestamp;
     private int endTimestamp;
+    private int verify = -1;
     private double interestRate;
     private double spendingLimit;
     private double depositLimit;

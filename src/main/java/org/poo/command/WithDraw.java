@@ -3,15 +3,14 @@ package org.poo.command;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.poo.fileio.CommandInput;
 import org.poo.fileio.UserInput;
-import org.poo.management.Accounts.Account;
-import org.poo.management.Accounts.AccountType;
+import org.poo.management.accounts.Account;
+import org.poo.management.accounts.AccountType;
 import org.poo.management.Database;
 import org.poo.management.Transactions;
 import org.poo.utils.Pair;
 
 import java.time.LocalDate;
 import java.time.Period;
-import java.util.ArrayList;
 
 public class WithDraw implements Order {
     private CommandInput command;
@@ -75,5 +74,10 @@ public class WithDraw implements Order {
 
         account.pay(amount);
         ((Account) receive).addFunds(command.getAmount());
+        user.addTransaction(new Transactions("Savings withdrawal", command.getTimestamp(), ((Account) receive).getIban(), ((Account) account).getIban(), amount));
+        user.addTransaction(new Transactions("Savings withdrawal", command.getTimestamp(), ((Account) receive).getIban(), ((Account) account).getIban(), amount));
+
+        ((Account) account).addTransaction(new Transactions("Savings withdrawal", command.getTimestamp(), ((Account) receive).getIban(), ((Account) account).getIban(), amount));
+        ((Account) receive).addTransaction(new Transactions("Savings withdrawal", command.getTimestamp(), ((Account) receive).getIban(), ((Account) account).getIban(), amount));
     }
 }

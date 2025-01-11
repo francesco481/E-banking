@@ -1,4 +1,4 @@
-package org.poo.management.Cards;
+package org.poo.management.cards;
 
 public class ClassicPayment implements PaymentStrategy {
     @Override

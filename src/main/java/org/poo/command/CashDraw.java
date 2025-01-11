@@ -5,9 +5,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.poo.fileio.CommandInput;
 import org.poo.fileio.UserInput;
-import org.poo.management.Accounts.Account;
-import org.poo.management.Accounts.AccountType;
-import org.poo.management.Cards.Card;
+import org.poo.management.accounts.Account;
+import org.poo.management.accounts.AccountType;
+import org.poo.management.cards.Card;
 import org.poo.management.Database;
 import org.poo.management.Transactions;
 
@@ -106,13 +106,14 @@ public class CashDraw implements Order {
             commandNode.put("command", "cashWithdrawal");
 
             ObjectNode outputNode = mapper.createObjectNode();
-            outputNode.put("timestamp", 15);
+            outputNode.put("timestamp", command.getTimestamp());
             outputNode.put("description", "Card not found");
 
             commandNode.set("output", outputNode);
-            commandNode.put("timestamp", 15);
+            commandNode.put("timestamp", timestamp);
 
             output.add(commandNode);
+            return;
         }
     }
 }
