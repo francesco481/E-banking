@@ -91,7 +91,7 @@ public final class Main {
         db.addCommerciants(inputData.getCommerciants());
         db.addCommands(inputData.getCommands());
 
-        for (int idx = 0 ; idx < db.getCommands().size() ; idx++)  {
+        for (int idx = 0; idx < db.getCommands().size(); idx++)  {
             CommandInput commands = db.getCommands().get(idx);
             String currCommand = commands.getCommand();
             switch (currCommand) {
@@ -146,7 +146,7 @@ public final class Main {
                     setAlias.execute(commands.getTimestamp());
                 }
                 case "splitPayment" -> {
-                    SplitPayment splitPayment = new SplitPayment(db, commands, db.getCommands(), idx+1, output);
+                    SplitPayment splitPayment = new SplitPayment(db, commands, idx + 1);
                     splitPayment.execute(commands.getTimestamp());
                 }
                 case "addInterest" -> {
@@ -168,7 +168,7 @@ public final class Main {
                     reportSpending.execute(commands.getTimestamp());
                 }
                 case "withdrawSavings" -> {
-                    WithDraw withDraw = new WithDraw(commands, db, output);
+                    WithDraw withDraw = new WithDraw(commands, db);
                     withDraw.execute(commands.getTimestamp());
                 }
                 case "upgradePlan" -> {
@@ -183,6 +183,9 @@ public final class Main {
                     NoSplit noSplit = new NoSplit(commands, output);
                     noSplit.execute(commands.getTimestamp());
                 }
+                default -> {
+                }
+
             }
         }
 

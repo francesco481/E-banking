@@ -30,8 +30,8 @@ public final class Database {
     private ArrayList<UserInput> users = new ArrayList<>();
     private ArrayList<ArrayList<AccountType>> accounts = new ArrayList<>();
     private ArrayList<Alias> aliases = new ArrayList<>();
-    private ArrayList<CommerciantInput> commerciants= new ArrayList<>();
-    private ArrayList<CommandInput> commands= new ArrayList<>();
+    private ArrayList<CommerciantInput> commerciants = new ArrayList<>();
+    private ArrayList<CommandInput> commands = new ArrayList<>();
     @Getter
     private static ArrayList<ExchangeInput> exchange = new ArrayList<>();
 
@@ -63,10 +63,20 @@ public final class Database {
         }
     }
 
+    /**
+     * Adds an array of commerciant inputs to the list of commerciants.
+     *
+     * @param commerciantInputs an array of {@code CommerciantInput} objects to be added
+     */
     public void addCommerciants(final CommerciantInput[] commerciantInputs) {
         this.commerciants.addAll(Arrays.asList(commerciantInputs));
     }
 
+    /**
+     * Adds an array of command inputs to the list of commands.
+     *
+     * @param commandInputs an array of {@code CommandInput} objects to be added
+     */
     public void addCommands(final CommandInput[] commandInputs) {
         this.commands.addAll(Arrays.asList(commandInputs));
     }

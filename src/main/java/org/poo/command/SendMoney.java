@@ -18,6 +18,10 @@ public final class SendMoney implements Order {
     private final CommandInput command;
     private final ArrayNode output;
 
+    private static final double STANDARD_COMISION = 1.002;
+    private static final double SILVER_COMISION = 1.001;
+    private static final int SILVER_AMOUNT = 500;
+
     public SendMoney(final Database database, final CommandInput command,
                      final ArrayNode output) {
         this.database = database;
@@ -100,19 +104,20 @@ public final class SendMoney implements Order {
         }
 
         assert sender != null;
-        double ronAmount = command.getAmount() * Database.getRate(((Account) sender).getCurrency(), "RON");
+        double ronAmount = command.getAmount() * Database.getRate(((Account) sender).getCurrency(),
+                                                                    "RON");
 
         double comision = 1;
 
         if (user1.getPlan().equals("standard")) {
-            comision = 1.002;
+            comision = STANDARD_COMISION;
         }
 
-        if (user1.getPlan().equals("silver")  &&  ronAmount >= 500) {
-            comision = 1.001;
+        if (user1.getPlan().equals("silver")  &&  ronAmount >= SILVER_AMOUNT) {
+            comision = SILVER_COMISION;
         }
 
-        if (sender.getBalance() < command.getAmount()*comision) {
+        if (sender.getBalance() < command.getAmount() * comision) {
             Transactions transactions = new Transactions("Insufficient funds",
                                                             command.getTimestamp());
 
@@ -123,6 +128,7 @@ public final class SendMoney implements Order {
 
         sender.pay(command.getAmount() * comision);
 
+        assert receiver != null;
         double amount  = command.getAmount() * Database.getRate(((Account) sender).getCurrency(),
                                                              ((Account) receiver).getCurrency());
         ((Account) receiver).addFunds(amount);
@@ -141,15 +147,6 @@ public final class SendMoney implements Order {
         ((Account) receiver).addTransaction(transactions);
 
 
-        if (user1.getPlan().equals("silver")  &&  ronAmount >= 300) {
-            user1.increaseGold();
-
-            if (user1.getGold() >= 5) {
-                user1.setPlan("gold");
-                String iban = ((Account) sender).getIban();
-                user1.addTransaction(new Transactions("Upgrade plan", command.getTimestamp(), iban, "gold"));
-                ((Account) sender).addTransaction(new Transactions("Upgrade plan", command.getTimestamp(), iban, "gold"));
-            }
-        }
+        PayOnline.changePlan((Account) sender, ronAmount, user1, command);
     }
 }

@@ -11,6 +11,8 @@ public final class Utils {
     private static final int CARD_SEED = 2;
     private static final int DIGIT_BOUND = 10;
     private static final int DIGIT_GENERATION = 16;
+    private static final int SILVER = 100;
+    private static final int GOLD = 250;
     private static final String RO_STR = "RO";
     private static final String POO_STR = "POOB";
 
@@ -58,23 +60,38 @@ public final class Utils {
         cardRandom = new Random(CARD_SEED);
     }
 
-    public static boolean isUp(String a, String b) {
-        if ((a.equals("standard") || a.equals("student"))  &&  !b.equals("standard")  &&  !b.equals("student")) {
+    /**
+     * Determines if a specific upgrade condition is met between two types.
+     *
+     * @param a the current type to be checked
+     * @param b the target type to be compared
+     * @return {@code true} if the upgrade condition is satisfied; {@code false} otherwise
+     */
+    public static boolean isUp(final String a, final String b) {
+        if ((a.equals("standard") || a.equals("student"))
+                && !b.equals("standard") && !b.equals("student")) {
             return true;
         }
 
         return a.equals("silver") && b.equals("gold");
     }
 
-    public static double getAmount(String a, String b) {
+    /**
+     * Calculates the amount required for an upgrade based on the current and target types.
+     *
+     * @param a the current type
+     * @param b the target type
+     * @return the upgrade amount as a {@code double}
+     */
+    public static double getAmount(final String a, final String b) {
         if (a.equals("standard") || a.equals("student")) {
             if (b.equals("silver")) {
-                return 100;
+                return SILVER;
             }
 
-            return 350;
+            return SILVER + GOLD;
         }
 
-        return 250;
+        return GOLD;
     }
 }

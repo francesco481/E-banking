@@ -24,13 +24,12 @@ public class Account {
     private int food = 0;
     private int tech = 0;
     private int clothes = 0;
+    private double interest = -1;
     private ArrayList<Card> cards = new ArrayList<>();
     private ArrayList<Transactions> transactions = new ArrayList<>();
     private ArrayList<String> used = new ArrayList<>();
     private HashMap<String, Double> spending = new HashMap<>();
-    private HashMap<String, Integer> number = new HashMap<>();
-
-    private double interest = -1;
+    private HashMap<String, Integer> counts = new HashMap<>();
 
     public Account(final CommandInput command) {
         this.iban = Utils.generateIBAN();
@@ -58,6 +57,11 @@ public class Account {
         cards.add(card);
     }
 
+    /**
+     * Adds a given number to the list of used items.
+     *
+     * @param number the number to be added to the list of used items
+     */
     public void addUsed(final String number) {
         used.add(number);
     }
@@ -70,7 +74,8 @@ public class Account {
      * @param transaction the transaction to be added to the user.
      */
     public void addTransaction(final Transactions transaction) {
-        if (this.transactions.isEmpty() ||  transaction.getTimestamp() >= this.transactions.getLast().getTimestamp()) {
+        if (this.transactions.isEmpty()
+                || transaction.getTimestamp() >= this.transactions.getLast().getTimestamp()) {
             this.transactions.addLast(transaction);
         } else {
             int position = 0;

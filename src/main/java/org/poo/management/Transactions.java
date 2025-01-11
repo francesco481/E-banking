@@ -58,7 +58,8 @@ public final class Transactions {
     }
 
     public Transactions(final String description, final int timestamp, final String currency,
-                        final double amount, final List<String> accounts, final List<Double> amounts, final String split) {
+                        final double amount, final List<String> accounts,
+                        final List<Double> amounts, final String split) {
         this.timestamp = timestamp;
         this.description = description;
         this.currency = currency;
@@ -69,7 +70,8 @@ public final class Transactions {
     }
 
     public Transactions(final String description, final int timestamp, final String currency,
-                        final double amount, final List<String> accounts, final String error, final String split) {
+                        final double amount, final List<String> accounts,
+                        final String error, final String split) {
         this.timestamp = timestamp;
         this.description = description;
         this.currency = currency;

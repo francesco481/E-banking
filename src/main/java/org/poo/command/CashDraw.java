@@ -5,25 +5,31 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.poo.fileio.CommandInput;
 import org.poo.fileio.UserInput;
+import org.poo.management.Database;
+import org.poo.management.Transactions;
 import org.poo.management.accounts.Account;
 import org.poo.management.accounts.AccountType;
 import org.poo.management.cards.Card;
-import org.poo.management.Database;
-import org.poo.management.Transactions;
 
-public class CashDraw implements Order {
-    Database database;
-    CommandInput command;
-    ArrayNode output;
+public final class CashDraw implements Order {
+    private final Database database;
+    private final CommandInput command;
+    private final ArrayNode output;
 
-    public CashDraw(Database database, CommandInput command, ArrayNode output) {
+    private static final double STANDARD_COMISION = 1.002;
+    private static final double SILVER_COMISION = 1.001;
+    private static final int SILVER_AMOUNT = 500;
+    private static final int GOLD_AMOUNT = 300;
+    private static final int PRAG = 5;
+
+    public CashDraw(final Database database, final CommandInput command, final ArrayNode output) {
         this.database = database;
         this.command = command;
         this.output = output;
     }
 
     @Override
-    public void execute(int timestamp) {
+    public void execute(final int timestamp) {
         UserInput user = null;
         int i = 0;
         for (UserInput curr : database.getUsers()) {
@@ -48,44 +54,49 @@ public class CashDraw implements Order {
                     }
 
                     double amount = command.getAmount() * Database.getRate("RON",
-                                            ((Account) account).getCurrency());
+                            ((Account) account).getCurrency());
                     double comision = 1;
 
                     if (user.getPlan().equals("standard")) {
-                        comision = 1.002;
+                        comision = STANDARD_COMISION;
                     }
 
-                    if (user.getPlan().equals("silver")  &&  command.getAmount() >= 500) {
-                        comision = 1.001;
+                    if (user.getPlan().equals("silver") && command.getAmount() >= SILVER_AMOUNT) {
+                        comision = SILVER_COMISION;
                     }
 
-                    if (amount*comision > account.getBalance()) {
-                        user.addTransaction(new Transactions("Insufficient funds", command.getTimestamp()));
-                        ((Account) account).addTransaction(new Transactions("Insufficient funds", command.getTimestamp()));
+                    if (amount * comision > account.getBalance()) {
+                        Transactions transactions = new Transactions("Insufficient funds",
+                                                                    command.getTimestamp());
+                        user.addTransaction(transactions);
+                        ((Account) account).addTransaction(transactions);
                         return;
                     }
 
-                    if (account.getBalance() - ((Account) account).getMinimum() >= amount*comision
+                    if (account.getBalance() - ((Account) account).getMinimum() >= amount * comision
                             && card.getStatus().equals("active")) {
                         account.pay(amount * comision);
 
-                        user.addTransaction(new Transactions("Cash withdrawal of " + String.format("%.1f", command.getAmount()), command.getTimestamp(), command.getAmount()));
-                        ((Account) account).addTransaction(new Transactions("Cash withdrawal of " + String.format("%.1f", command.getAmount()), command.getTimestamp(), command.getAmount()));
+                        Transactions transactions = new Transactions("Cash withdrawal of "
+                                                    + String.format("%.1f", command.getAmount()),
+                                                    command.getTimestamp(), command.getAmount());
+                        user.addTransaction(transactions);
+                        ((Account) account).addTransaction(transactions);
 
-                        if (user.getPlan().equals("silver")  &&  command.getAmount() >= 300) {
+                        if (user.getPlan().equals("silver") && command.getAmount() >= GOLD_AMOUNT) {
                             user.increaseGold();
 
-                            if (user.getGold() >= 5) {
+                            if (user.getGold() >= PRAG) {
                                 user.setPlan("gold");
                             }
                         }
                         return;
                     }
 
-                    if (account.getBalance() - ((Account) account).getMinimum() < amount*comision
+                    if (account.getBalance() - ((Account) account).getMinimum() < amount * comision
                             && card.getStatus().equals("active")) {
-                        Transactions transactions = new Transactions("Cannot perform payment due to a minimum balance being set",
-                                timestamp);
+                        Transactions transactions = new Transactions("Cannot perform payment due"
+                                + " to a minimum balance being set", timestamp);
 
                         user.addTransaction(transactions);
                         ((Account) account).addTransaction(transactions);
@@ -93,13 +104,6 @@ public class CashDraw implements Order {
                     }
                 }
             }
-
-//            for (String card : ((Account) account).getUsed()) {
-//                if (card.equals(command.getCardNumber())) {
-//                    //used card
-//                    return;
-//                }
-//            }
 
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode commandNode = mapper.createObjectNode();

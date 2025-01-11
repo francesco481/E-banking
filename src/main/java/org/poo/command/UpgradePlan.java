@@ -12,20 +12,21 @@ import org.poo.management.Transactions;
 import org.poo.utils.Pair;
 import org.poo.utils.Utils;
 
-public class UpgradePlan implements Order {
-    Database database;
-    CommandInput command;
-    ArrayNode output;
+public final class UpgradePlan implements Order {
+    private final Database database;
+    private final CommandInput command;
+    private final ArrayNode output;
 
-    public UpgradePlan(Database database, CommandInput command, ArrayNode output) {
+    public UpgradePlan(final Database database, final CommandInput command,
+                       final ArrayNode output) {
         this.database = database;
         this.command = command;
         this.output = output;
     }
 
     @Override
-    public void execute(int timestamp) {
-        Pair< Integer, Integer > idx = database.findBigIBAN(command.getAccount());
+    public void execute(final int timestamp) {
+        Pair<Integer, Integer> idx = database.findBigIBAN(command.getAccount());
 
         if (idx.getFirst() == -1) {
             ObjectMapper mapper = new ObjectMapper();
@@ -56,17 +57,22 @@ public class UpgradePlan implements Order {
             return;
         }
 
-        double amount = Utils.getAmount(user.getPlan(), command.getNewPlanType()) * Database.getRate("RON", ((Account) account).getCurrency());
+        double amount = Utils.getAmount(user.getPlan(), command.getNewPlanType())
+                        * Database.getRate("RON", ((Account) account).getCurrency());
         if (amount > account.getBalance()) {
-            user.addTransaction(new Transactions("Insufficient funds", command.getTimestamp()));
-            ((Account) account).addTransaction(new Transactions("Insufficient funds", command.getTimestamp()));
+            Transactions transactions = new Transactions("Insufficient funds",
+                    command.getTimestamp());
+            user.addTransaction(transactions);
+            ((Account) account).addTransaction(transactions);
             return;
         }
 
         account.pay(amount);
 
         user.setPlan(command.getNewPlanType());
-        user.addTransaction(new Transactions("Upgrade plan", command.getTimestamp(), command.getAccount(), command.getNewPlanType()));
-        ((Account) account).addTransaction(new Transactions("Upgrade plan", command.getTimestamp(), command.getAccount(), command.getNewPlanType()));
+        Transactions transactions = new Transactions("Upgrade plan", command.getTimestamp(),
+                                    command.getAccount(), command.getNewPlanType());
+        user.addTransaction(transactions);
+        ((Account) account).addTransaction(transactions);
     }
 }

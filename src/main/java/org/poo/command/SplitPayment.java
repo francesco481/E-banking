@@ -1,12 +1,11 @@
 package org.poo.command;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.poo.fileio.CommandInput;
 import org.poo.fileio.UserInput;
-import org.poo.management.accounts.Account;
-import org.poo.management.accounts.AccountType;
 import org.poo.management.Database;
 import org.poo.management.Transactions;
+import org.poo.management.accounts.Account;
+import org.poo.management.accounts.AccountType;
 import org.poo.utils.Pair;
 
 import java.util.ArrayList;
@@ -15,18 +14,13 @@ import java.util.List;
 public final class SplitPayment implements Order {
     private final Database database;
     private final CommandInput command;
-    private final ArrayList<CommandInput> commands;
     private final int st;
-    private final ArrayNode output;
 
     public SplitPayment(final Database database, final CommandInput command,
-                        final ArrayList<CommandInput> commands, final int st,
-                        final ArrayNode output) {
+                        final int st) {
         this.database = database;
         this.command = command;
-        this.commands = commands;
         this.st = st;
-        this.output = output;
     }
 
     /**
@@ -57,24 +51,7 @@ public final class SplitPayment implements Order {
         }
 
         if (command.getVerify() == -1) {
-            for (UserInput user : userPay) {
-                for (int idx = st ; idx < commands.size() ; idx++) {
-                    if (commands.get(idx).getCommand().equals("acceptSplitPayment")  &&  commands.get(idx).getEmail().equals(user.getEmail())) {
-                        if(user != userPay.getLast()) {
-                            commands.remove(idx);
-                        } else {
-                            command.setVerify(1);
-                            commands.set(idx, command);
-                            return;
-                        }
-                        break;
-                    } else if (commands.get(idx).getCommand().equals("rejectSplitPayment")  &&  commands.get(idx).getEmail().equals(user.getEmail())){
-                        command.setVerify(0);
-                        commands.set(idx, command);
-                        return;
-                    }
-                }
-            }
+            extracted(userPay);
             return;
         }
 
@@ -83,31 +60,26 @@ public final class SplitPayment implements Order {
 
                 double amount = command.getAmount() / command.getAccounts().size();
 
-                for (int idx = 0 ; idx < userPay.size() ; idx++) {
+                for (int idx = 0; idx < userPay.size(); idx++) {
                     String outAmount = String.format("%.2f", command.getAmount());
-                    userPay.get(idx).addTransaction(new Transactions("Split payment of "
-                            + outAmount + " " + command.getCurrency(), timestamp,
-                            command.getCurrency(), amount, command.getAccounts(),
-                            "One user rejected the payment.","equal"));
 
-                    ((Account) accountPay.get(idx)).addTransaction(new Transactions("Split payment of "
+                    Transactions transactions = new Transactions("Split payment of "
                             + outAmount + " " + command.getCurrency(), timestamp,
                             command.getCurrency(), amount, command.getAccounts(),
-                            "One user rejected the payment.","equal"));
+                            "One user rejected the payment.", "equal");
+                    userPay.get(idx).addTransaction(transactions);
+                    ((Account) accountPay.get(idx)).addTransaction(transactions);
                 }
-
             } else {
                 for (int idx = 0; idx < userPay.size(); idx++) {
                     String outAmount = String.format("%.2f", command.getAmount());
-                    userPay.get(idx).addTransaction(new Transactions("Split payment of "
+                    Transactions transactions = new Transactions("Split payment of "
                             + outAmount + " " + command.getCurrency(), timestamp,
                             command.getCurrency(), -1, command.getAccounts(),
-                            "One user rejected the payment.", command.getAmountForUsers(), "custom"));
-
-                    ((Account) accountPay.get(idx)).addTransaction(new Transactions("Split payment of "
-                            + outAmount + " " + command.getCurrency(), timestamp,
-                            command.getCurrency(), -1, command.getAccounts(),
-                            "One user rejected the payment.", command.getAmountForUsers(), "custom"));
+                            "One user rejected the payment.", command.getAmountForUsers(),
+                            "custom");
+                    userPay.get(idx).addTransaction(transactions);
+                    ((Account) accountPay.get(idx)).addTransaction(transactions);
                 }
             }
 
@@ -120,7 +92,7 @@ public final class SplitPayment implements Order {
 
             for (AccountType curr : accountPay) {
                 double currAmount = amount * Database.getRate(command.getCurrency(),
-                                                    ((Account) curr).getCurrency());
+                        ((Account) curr).getCurrency());
 
                 if (curr.getBalance() < currAmount) {
                     ok = 0;
@@ -130,26 +102,23 @@ public final class SplitPayment implements Order {
             }
 
             if (ok == 0) {
+                int st1 = 0;
                 for (UserInput user : userPay) {
                     String outAmount = String.format("%.2f", command.getAmount());
-                    user.addTransaction(new Transactions("Split payment of "
+                    Transactions transactions = new Transactions("Split payment of "
                             + outAmount + " " + command.getCurrency(), timestamp,
                             command.getCurrency(), amount, command.getAccounts(),
-                            "Account " + error + " has insufficient funds for a split payment.", "equal"));
-                }
-
-                for (AccountType account : accountPay) {
-                    String outAmount = String.format("%.2f", command.getAmount());
-                    ((Account) account).addTransaction(new Transactions("Split payment of "
-                            + outAmount + " " + command.getCurrency(), timestamp,
-                            command.getCurrency(), amount, command.getAccounts(),
-                            "Account " + error + " has insufficient funds for a split payment.", "equal"));
+                            "Account " + error + " has insufficient funds for a split payment.",
+                            "equal");
+                    user.addTransaction(transactions);
+                    ((Account) accountPay.get(st1)).addTransaction(transactions);
+                    st1++;
                 }
 
                 return;
             }
 
-            int st = 0;
+            int st2 = 0;
             for (AccountType account : accountPay) {
                 double currAmount = amount * Database.getRate(command.getCurrency(),
                         ((Account) account).getCurrency());
@@ -157,18 +126,18 @@ public final class SplitPayment implements Order {
                 String outAmount = String.format("%.2f", command.getAmount());
                 Transactions transactions = new Transactions("Split payment of " + outAmount + " "
                         + command.getCurrency(), timestamp, command.getCurrency(),
-                        amount, command.getAccounts(),"equal");
+                        amount, command.getAccounts(), "equal");
 
-                userPay.get(st).addTransaction(transactions);
+                userPay.get(st2).addTransaction(transactions);
                 ((Account) account).addTransaction(transactions);
-                st++;
+                st2++;
             }
         } else {
             amounts = command.getAmountForUsers();
 
-            for (int idx = 0 ; idx < command.getAccounts().size() ; idx++) {
+            for (int idx = 0; idx < command.getAccounts().size(); idx++) {
                 double currAmount = amounts.get(idx) * Database.getRate(command.getCurrency(),
-                            ((Account) accountPay.get(idx)).getCurrency());
+                        ((Account) accountPay.get(idx)).getCurrency());
 
                 if (accountPay.get(idx).getBalance() < currAmount) {
                     ok = 0;
@@ -178,25 +147,23 @@ public final class SplitPayment implements Order {
             }
 
             if (ok == 0) {
-                for (int idx = 0 ; idx < userPay.size() ; idx++) {
+                for (int idx = 0; idx < userPay.size(); idx++) {
                     String outAmount = String.format("%.2f", command.getAmount());
-                    userPay.get(idx).addTransaction(new Transactions("Split payment of "
+                    Transactions transactions = new Transactions("Split payment of "
                             + outAmount + " " + command.getCurrency(), timestamp,
                             command.getCurrency(), -1, command.getAccounts(),
-                            "Account " + error + " has insufficient funds for a split payment.",  command.getAmountForUsers(),"custom"));
-
-                    ((Account) accountPay.get(idx)).addTransaction(new Transactions("Split payment of "
-                            + outAmount + " " + command.getCurrency(), timestamp,
-                            command.getCurrency(), -1, command.getAccounts(),
-                            "Account " + error + " has insufficient funds for a split payment.", command.getAmountForUsers(), "custom"));
+                            "Account " + error + " has insufficient funds for a split payment.",
+                            command.getAmountForUsers(), "custom");
+                    userPay.get(idx).addTransaction(transactions);
+                    ((Account) accountPay.get(idx)).addTransaction(transactions);
                 }
 
                 return;
             }
 
-            int st = 0;
+            int st3 = 0;
             for (AccountType account : accountPay) {
-                double currAmount = amounts.get(st) * Database.getRate(command.getCurrency(),
+                double currAmount = amounts.get(st3) * Database.getRate(command.getCurrency(),
                         ((Account) account).getCurrency());
                 account.pay(currAmount);
                 String outAmount = String.format("%.2f", command.getAmount());
@@ -204,9 +171,33 @@ public final class SplitPayment implements Order {
                         + command.getCurrency(), timestamp, command.getCurrency(),
                         -1, command.getAccounts(), command.getAmountForUsers(), "custom");
 
-                userPay.get(st).addTransaction(transactions);
+                userPay.get(st3).addTransaction(transactions);
                 ((Account) account).addTransaction(transactions);
-                st++;
+                st3++;
+            }
+        }
+    }
+
+    private void extracted(final ArrayList<UserInput> userPay) {
+        ArrayList<CommandInput> commands = database.getCommands();
+        for (UserInput user : userPay) {
+            for (int idx = st; idx < commands.size(); idx++) {
+                if (commands.get(idx).getCommand().equals("acceptSplitPayment")
+                        && commands.get(idx).getEmail().equals(user.getEmail())) {
+                    if (user != userPay.getLast()) {
+                        commands.remove(idx);
+                    } else {
+                        command.setVerify(1);
+                        commands.set(idx, command);
+                        return;
+                    }
+                    break;
+                } else if (commands.get(idx).getCommand().equals("rejectSplitPayment")
+                        && commands.get(idx).getEmail().equals(user.getEmail())) {
+                    command.setVerify(0);
+                    commands.set(idx, command);
+                    return;
+                }
             }
         }
     }

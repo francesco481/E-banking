@@ -5,17 +5,17 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.poo.fileio.CommandInput;
 
-public class NoSplit implements Order {
-    final private CommandInput command;
-    final private ArrayNode output;
+public final class NoSplit implements Order {
+    private final CommandInput command;
+    private final ArrayNode output;
 
-    public NoSplit(CommandInput command, ArrayNode output) {
+    public NoSplit(final CommandInput command, final ArrayNode output) {
         this.command = command;
         this.output = output;
     }
 
     @Override
-    public void execute(int timestamp) {
+    public void execute(final int timestamp) {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode commandNode = mapper.createObjectNode();
         commandNode.put("command", command.getCommand());

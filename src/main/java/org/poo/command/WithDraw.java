@@ -1,6 +1,5 @@
 package org.poo.command;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.poo.fileio.CommandInput;
 import org.poo.fileio.UserInput;
 import org.poo.management.accounts.Account;
@@ -12,20 +11,20 @@ import org.poo.utils.Pair;
 import java.time.LocalDate;
 import java.time.Period;
 
-public class WithDraw implements Order {
-    private CommandInput command;
-    private Database database;
-    private final ArrayNode output;
+public final class WithDraw implements Order {
+    private final CommandInput command;
+    private final Database database;
 
-    public WithDraw(CommandInput command, Database database, ArrayNode output) {
+    private static final int AGE_LIMIT = 21;
+
+    public WithDraw(final CommandInput command, final Database database) {
         this.command = command;
         this.database = database;
-        this.output = output;
     }
 
     @Override
-    public void execute(int timestamp) {
-        Pair < Integer, Integer > idx = database.findBigIBAN(command.getAccount());
+    public void execute(final int timestamp) {
+        Pair<Integer, Integer> idx = database.findBigIBAN(command.getAccount());
 
         if (idx.getFirst() == -1) {
             //account not found
@@ -39,9 +38,11 @@ public class WithDraw implements Order {
         LocalDate currDate = LocalDate.now();
 
         Period age = Period.between(birth, currDate);
-        if (age.getYears() < 21) {
-            user.addTransaction(new Transactions("You don't have the minimum age required.", command.getTimestamp()));
-            ((Account) account).addTransaction(new Transactions("You don't have the minimum age required.", command.getTimestamp()));
+        if (age.getYears() < AGE_LIMIT) {
+            Transactions transactions = new Transactions("You don't have the minimum age required.",
+                    command.getTimestamp());
+            user.addTransaction(transactions);
+            ((Account) account).addTransaction(transactions);
             return;
         }
 
@@ -52,20 +53,23 @@ public class WithDraw implements Order {
 
         AccountType receive = null;
         for (AccountType curr : database.getAccounts().get(idx.getFirst())) {
-            if (((Account) curr).getCurrency().equals(command.getCurrency())  &&  ((Account) curr).getType().equals("classic")) {
+            if (((Account) curr).getCurrency().equals(command.getCurrency())
+                    &&  ((Account) curr).getType().equals("classic")) {
                 receive = curr;
                 break;
             }
         }
 
         if (receive == null) {
-            user.addTransaction(new Transactions("You do not have a classic account.", command.getTimestamp()));
-            ((Account) account).addTransaction(new Transactions("You do not have a classic account.", command.getTimestamp()));
+            Transactions transactions = new Transactions("You do not have a classic account.",
+                    command.getTimestamp());
+            user.addTransaction(transactions);
+            ((Account) account).addTransaction(transactions);
             return;
         }
 
-        double comision = 0;
-        double amount = Database.getRate(command.getCurrency(), ((Account) receive).getCurrency()) * command.getAmount();
+        double amount = Database.getRate(command.getCurrency(), ((Account) receive).getCurrency())
+                * command.getAmount();
 
         if (amount > account.getBalance()) {
             //insf funds
@@ -74,10 +78,12 @@ public class WithDraw implements Order {
 
         account.pay(amount);
         ((Account) receive).addFunds(command.getAmount());
-        user.addTransaction(new Transactions("Savings withdrawal", command.getTimestamp(), ((Account) receive).getIban(), ((Account) account).getIban(), amount));
-        user.addTransaction(new Transactions("Savings withdrawal", command.getTimestamp(), ((Account) receive).getIban(), ((Account) account).getIban(), amount));
+        Transactions transactions = new Transactions("Savings withdrawal", command.getTimestamp(),
+                ((Account) receive).getIban(), ((Account) account).getIban(), amount);
+        user.addTransaction(transactions);
+        user.addTransaction(transactions);
 
-        ((Account) account).addTransaction(new Transactions("Savings withdrawal", command.getTimestamp(), ((Account) receive).getIban(), ((Account) account).getIban(), amount));
-        ((Account) receive).addTransaction(new Transactions("Savings withdrawal", command.getTimestamp(), ((Account) receive).getIban(), ((Account) account).getIban(), amount));
+        ((Account) account).addTransaction(transactions);
+        ((Account) receive).addTransaction(transactions);
     }
 }

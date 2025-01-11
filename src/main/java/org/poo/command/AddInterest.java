@@ -44,8 +44,10 @@ public final class AddInterest implements Order {
                         double amount = ((Account) account).getInterest() * account.getBalance();
                         ((Account) account).addFunds(amount);
 
-                        ((Account) account).addTransaction(new Transactions("Interest rate income", command.getTimestamp(), amount, ((Account) account).getCurrency()));
-                        ignored.addTransaction(new Transactions("Interest rate income", command.getTimestamp(), amount, ((Account) account).getCurrency()));
+                        Transactions transactions = new Transactions("Interest rate income",
+                                command.getTimestamp(), amount, ((Account) account).getCurrency());
+                        ((Account) account).addTransaction(transactions);
+                        ignored.addTransaction(transactions);
                     } else {
                         ObjectNode outputNode = mapper.createObjectNode();
                         outputNode.put("command", "addInterest");

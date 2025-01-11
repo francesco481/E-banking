@@ -28,7 +28,8 @@ public final class UserInput {
      * @param transaction the transaction to be added to the account.
      */
     public void addTransaction(final Transactions transaction) {
-        if (this.transactions.isEmpty() ||  transaction.getTimestamp() >= this.transactions.getLast().getTimestamp()) {
+        if (this.transactions.isEmpty()
+                || transaction.getTimestamp() >= this.transactions.getLast().getTimestamp()) {
             this.transactions.addLast(transaction);
         } else {
             int position = 0;
@@ -42,6 +43,10 @@ public final class UserInput {
         }
     }
 
+    /**
+     * Increases the gold count of the current object by 1.
+     * This method modifies the `gold` attribute by adding 1 to its current value.
+     */
     public void increaseGold() {
         this.gold += 1;
     }

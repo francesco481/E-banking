@@ -28,7 +28,8 @@ public final class ShowTransaction {
         if (transaction.getSplit() != null) {
             transactionNode.put("splitPaymentType", transaction.getSplit());
         }
-        if (!transaction.getAccounts().isEmpty()  ||  transaction.getDescription().equals("Interest rate income")) {
+        if (!transaction.getAccounts().isEmpty()
+                ||  transaction.getDescription().equals("Interest rate income")) {
             transactionNode.put("currency", transaction.getCurrency());
         }
         if (transaction.getAmount() != -1) {
@@ -50,7 +51,8 @@ public final class ShowTransaction {
         if (transaction.getReceiverIBAN() != null) {
             transactionNode.put("receiverIBAN", transaction.getReceiverIBAN());
         }
-        if (!transaction.getDescription().equals("Interest rate income")  && transaction.getAmount() != -1 && transaction.getCurrency() != null
+        if (!transaction.getDescription().equals("Interest rate income")
+                && transaction.getAmount() != -1 && transaction.getCurrency() != null
                 &&  transaction.getAccounts().isEmpty()) {
             transactionNode.put("amount", transaction.getAmount() + " "
                     + transaction.getCurrency());
@@ -77,7 +79,8 @@ public final class ShowTransaction {
             transactionNode.put("account", transaction.getIban());
         }
 
-        if (!transaction.getAccounts().isEmpty() && !transaction.getAmounts().isEmpty()  &&  transaction.getError() != null) {
+        if (!transaction.getAccounts().isEmpty() && !transaction.getAmounts().isEmpty()
+                &&  transaction.getError() != null) {
             ArrayNode involvedAccounts = mapper.createArrayNode();
             for (String account : transaction.getAccounts()) {
                 involvedAccounts.add(account);
@@ -93,7 +96,8 @@ public final class ShowTransaction {
             transactionNode.put("error", transaction.getError());
         }
 
-        if (!transaction.getAccounts().isEmpty()  &&  !transaction.getAmounts().isEmpty()  &&  transaction.getError() == null) {
+        if (!transaction.getAccounts().isEmpty()  &&  !transaction.getAmounts().isEmpty()
+                &&  transaction.getError() == null) {
             ArrayNode involvedAccounts = mapper.createArrayNode();
             for (String account : transaction.getAccounts()) {
                 involvedAccounts.add(account);
@@ -108,7 +112,8 @@ public final class ShowTransaction {
             transactionNode.set("amountForUsers", amountForUsers);
         }
 
-        if (!transaction.getAccounts().isEmpty() && transaction.getAmounts().isEmpty()  &&  transaction.getError() != null) {
+        if (!transaction.getAccounts().isEmpty() && transaction.getAmounts().isEmpty()
+                &&  transaction.getError() != null) {
             ArrayNode involvedAccounts = mapper.createArrayNode();
             for (String account : transaction.getAccounts()) {
                 involvedAccounts.add(account);
@@ -118,7 +123,8 @@ public final class ShowTransaction {
             transactionNode.put("error", transaction.getError());
         }
 
-        if (!transaction.getAccounts().isEmpty()  &&  transaction.getAmounts().isEmpty()  &&  transaction.getError() == null) {
+        if (!transaction.getAccounts().isEmpty()  &&  transaction.getAmounts().isEmpty()
+                &&  transaction.getError() == null) {
             ArrayNode involvedAccounts = mapper.createArrayNode();
             for (String account : transaction.getAccounts()) {
                 involvedAccounts.add(account);
