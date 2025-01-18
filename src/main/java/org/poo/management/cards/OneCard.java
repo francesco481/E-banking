@@ -1,4 +1,5 @@
 package org.poo.management.cards;
+import org.poo.management.cards.OnePayment;
 
 import lombok.Getter;
 import lombok.Setter;
